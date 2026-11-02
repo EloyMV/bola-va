@@ -43,6 +43,33 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('El último espacio es accesible y abre su detalle', (
+    tester,
+  ) async {
+    usarMovilPequeno(tester);
+    await tester.pumpWidget(const MyApp());
+
+    const tarjetaFinal = ValueKey<String>('espacio-card-pro');
+    expect(find.byType(EspacioTarjeta), findsNWidgets(6));
+    await tester.ensureVisible(find.byKey(tarjetaFinal));
+    await tester.pumpAndSettle();
+    expect(find.text('Pista Pro'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(tarjetaFinal),
+        matching: find.text('Hasta 4 jugadores'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Competición'), findsOneWidget);
+
+    await tester.tap(find.byKey(tarjetaFinal));
+    await tester.pumpAndSettle();
+    expect(find.text('Pista Pro'), findsNWidgets(2));
+    expect(find.text('Capacidad: 4 jugadores'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Las siete plantillas admiten móvil pequeño y texto grande', (
     tester,
   ) async {
