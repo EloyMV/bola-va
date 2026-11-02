@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'ui/core/theme/app_tema.dart';
-import 'ui/espacios/ui/espacios_screen.dart';
+import 'ui/acceso/ui/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTema.claro,
       themeMode: ThemeMode.light,
-      home: const EspaciosScreen(),
+      home: const LoginScreen(),
     );
   }
 }

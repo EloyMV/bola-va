@@ -35,11 +35,16 @@ void usarMovilPequeno(WidgetTester tester) {
 }
 
 void main() {
-  testWidgets('La aplicación abre las pistas con el tema compartido', (
+  testWidgets('La aplicación abre el login con la contraseña oculta', (
     tester,
   ) async {
     await tester.pumpWidget(const MyApp());
-    expect(find.text('Pistas de pádel'), findsOneWidget);
+    expect(find.text('Bola Va'), findsOneWidget);
+    expect(find.text('Iniciar sesión'), findsOneWidget);
+    expect(find.text('Correo electrónico'), findsOneWidget);
+    expect(find.text('Contraseña'), findsOneWidget);
+    final campoClave = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(campoClave.obscureText, isTrue);
     expect(tester.takeException(), isNull);
   });
 
