@@ -7,6 +7,68 @@ import 'app_espaciado.dart';
 /// Equivalente a la hoja de estilos global de una web.
 /// Los widgets Material heredan este tema sin repetir estilos en cada pantalla.
 abstract final class AppTema {
+  /// Variante de la paleta común para las pantallas de acceso.
+  static ThemeData get acceso {
+    final base = claro;
+    final formaBoton = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppBordes.medio),
+    );
+
+    return base.copyWith(
+      scaffoldBackgroundColor: AppColores.fondoAccesoProfundo,
+      appBarTheme: base.appBarTheme.copyWith(
+        backgroundColor: AppColores.primario,
+        foregroundColor: AppColores.sobrePrimario,
+        titleTextStyle: base.textTheme.titleMedium?.copyWith(
+          color: AppColores.sobrePrimario,
+        ),
+      ),
+      cardTheme: base.cardTheme.copyWith(
+        elevation: 4,
+        shadowColor: AppColores.texto.withValues(alpha: 0.16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppBordes.grande),
+        ),
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        fillColor: AppColores.fondo,
+        prefixIconColor: AppColores.primario,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColores.acento,
+          foregroundColor: AppColores.texto,
+          disabledBackgroundColor: AppColores.borde,
+          disabledForegroundColor: AppColores.textoSecundario,
+          minimumSize: const Size(48, 56),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppEspaciado.lg,
+            vertical: AppEspaciado.sm,
+          ),
+          shape: formaBoton,
+          textStyle: base.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: AppColores.fondo,
+          foregroundColor: AppColores.texto,
+          minimumSize: const Size(48, 56),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppEspaciado.md,
+            vertical: AppEspaciado.sm,
+          ),
+          side: const BorderSide(color: AppColores.borde),
+          shape: formaBoton,
+          textStyle: base.textTheme.labelLarge,
+        ),
+      ),
+    );
+  }
+
   static ThemeData get claro {
     const esquema = ColorScheme.light(
       primary: AppColores.primario,
@@ -39,7 +101,8 @@ abstract final class AppTema {
       surfaceTint: AppColores.primario,
     );
 
-    final texto = ThemeData.light(useMaterial3: true).textTheme
+    final textoBase = ThemeData.light(useMaterial3: true).textTheme;
+    final texto = textoBase
         .apply(bodyColor: AppColores.texto, displayColor: AppColores.texto)
         .copyWith(
           headlineLarge: const TextStyle(
@@ -92,7 +155,9 @@ abstract final class AppTema {
             fontWeight: FontWeight.w600,
             height: 1.4,
           ),
-        );
+        )
+        // Conserva la fuente de Material también en los estilos redefinidos.
+        .apply(fontFamily: textoBase.bodyMedium?.fontFamily);
 
     final bordeCampo = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppBordes.medio),

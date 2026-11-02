@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 abstract final class AppColores {
   static const Color primario = Color(0xFF145B43);
   static const Color secundario = Color(0xFF1966A3);
+  static const Color fondoAccesoProfundo = Color(0xFF102E43);
   static const Color acento = Color(0xFFD6F36A);
   static const Color fondo = Color(0xFFF5F7F4);
   static const Color superficie = Color(0xFFFFFFFF);
