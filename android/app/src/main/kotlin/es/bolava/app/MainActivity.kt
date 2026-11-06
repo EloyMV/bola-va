@@ -1,4 +1,4 @@
-package com.example.proyecto
+package es.bolava.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -12,6 +12,7 @@ class PaginaBase extends StatelessWidget {
     this.anchoMaximo = AppEspaciado.anchoContenido,
     this.centrarContenido = false,
     this.acciones,
+    this.fondo,
   });
 
   final String titulo;
@@ -20,11 +21,14 @@ class PaginaBase extends StatelessWidget {
   final double anchoMaximo;
   final bool centrarContenido;
   final List<Widget>? acciones;
+  final Widget? fondo;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final pagina = Scaffold(
+      backgroundColor: fondo == null ? null : Colors.transparent,
       appBar: AppBar(
+        backgroundColor: fondo == null ? null : Colors.transparent,
         title: Text(titulo, maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: acciones,
       ),
@@ -69,6 +73,19 @@ class PaginaBase extends StatelessWidget {
           },
         ),
       ),
+    );
+
+    if (fondo == null) return pagina;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // El fondo es decorativo: no intercepta gestos ni añade lecturas.
+        Positioned.fill(
+          child: IgnorePointer(child: ExcludeSemantics(child: fondo!)),
+        ),
+        pagina,
+      ],
     );
   }
 }

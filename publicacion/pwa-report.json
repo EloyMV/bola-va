@@ -1,0 +1,229 @@
+{
+  "app": "Bola Va",
+  "scope": "/bola-va/app/",
+  "packagerVersion": 1,
+  "cacheName": "bola-va-static-9c00b51f24626fc65b4f",
+  "contentHash": "9c00b51f24626fc65b4fd7ac25939363d8d41465a6629bb15ffcff7a5db5ad90",
+  "files": [
+    {
+      "path": "assets/AssetManifest.bin",
+      "size": 494,
+      "sha256": "f7e4e83a1515df351369823c04b8354befbe838415a4d9c4f779c18b935248fe"
+    },
+    {
+      "path": "assets/AssetManifest.bin.json",
+      "size": 662,
+      "sha256": "40703dcebfa70542b33deb692026cc47b6691cef148a1d0297b20bbffb501e19"
+    },
+    {
+      "path": "assets/assets/fonts/Roboto-Bold.ttf",
+      "size": 170760,
+      "sha256": "7d0b991ee3e0be7af01ad7ea8cd2beea6c00a25e679a0226b6737f079aafff86"
+    },
+    {
+      "path": "assets/assets/fonts/Roboto-LICENSE.txt",
+      "size": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "assets/assets/fonts/Roboto-Medium.ttf",
+      "size": 172064,
+      "sha256": "f205cc511821ea56078a105557fcea6253129404d411c997e1866fbd006abb68"
+    },
+    {
+      "path": "assets/assets/fonts/Roboto-Regular.ttf",
+      "size": 171676,
+      "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+    },
+    {
+      "path": "assets/assets/images/bola_va_icono.png",
+      "size": 1105473,
+      "sha256": "57c3229ac6f9442afbae50ff2f73a978457d4a6cab9b767f292624d5208ed7d2"
+    },
+    {
+      "path": "assets/FontManifest.json",
+      "size": 405,
+      "sha256": "399bad6f0620c2611cdf17604ca53a786142fdf1c8a9c1901e5f048aff0cde4d"
+    },
+    {
+      "path": "assets/fonts/MaterialIcons-Regular.otf",
+      "size": 8776,
+      "sha256": "d9c2b6c989ceb9160b378e55b95c54dd2adda4a2ea0e43c429b98278e7d4f6c8"
+    },
+    {
+      "path": "assets/NOTICES",
+      "size": 1302718,
+      "sha256": "caf1bf67d63c102889c3f967c9cd43389cfb327d1f7e488196ea2915745e63b0"
+    },
+    {
+      "path": "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf",
+      "size": 1472,
+      "sha256": "3d90c370aa4cf00dc57ee2b902f6652147c0f81e03e483df584a9c08b1687c9d"
+    },
+    {
+      "path": "assets/shaders/ink_sparkle.frag",
+      "size": 8890,
+      "sha256": "2dca5ab93d4ec29e963f996f3916320ba60825e9537dfb149a68008c7a16b026"
+    },
+    {
+      "path": "assets/shaders/stretch_effect.frag",
+      "size": 6737,
+      "sha256": "ab412f07a5b9b50b67a885b24dbe16929738ae28630407d6490c924caf0a3220"
+    },
+    {
+      "path": "canvaskit/canvaskit.js",
+      "size": 86987,
+      "sha256": "bb559f6080c7d312ac2a912b4abec9f68ff3d3022d4a603c7796b9b31460642b"
+    },
+    {
+      "path": "canvaskit/canvaskit.js.symbols",
+      "size": 1356926,
+      "sha256": "384f80b392972c83fd4f262527e3d06215a297d33ed59732c726721e9d9311bd"
+    },
+    {
+      "path": "canvaskit/canvaskit.wasm",
+      "size": 7284602,
+      "sha256": "fbed517a43e82452404446683f00f2e876d835aed84410695759e67b6bb01cd3"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.js",
+      "size": 86226,
+      "sha256": "6018b12bd8ed37e6952eee72d59c1cf7ad707ccdb74a0a45190010f77edd9068"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.js.symbols",
+      "size": 1235870,
+      "sha256": "31c86fac6042dd8b756150832c1d15495d0d07742e2718f75dbdde5a5a91455e"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.wasm",
+      "size": 5428806,
+      "sha256": "ae8ff1d858140f7b1300ced3fa89fb8c9dce0a400a0f4f1e11f6dcfb3315fdcf"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.js",
+      "size": 63650,
+      "sha256": "cec554b46ddcf4c0e63d799e0556d546f42d2c3f69316fb4f67ed776f6104558"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.js.symbols",
+      "size": 1672152,
+      "sha256": "b6b79ed497e11d4cd13cc46724f9e289eacc744d2d185e31c72d595cdf62772b"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.wasm",
+      "size": 5216217,
+      "sha256": "565f5cc1cca6ab120f11934b105f01fec4b58b480c82e0889dca93af8e6f8635"
+    },
+    {
+      "path": "canvaskit/skwasm.js",
+      "size": 63537,
+      "sha256": "71d7d3e34bf71b52bdba3b588b103bba8148ba28de5754083e01b3398e7a6e1c"
+    },
+    {
+      "path": "canvaskit/skwasm.js.symbols",
+      "size": 1540006,
+      "sha256": "9137f1a3ae744dea575043abfc6e063a047e910e6dab1ee53e496c975d1c033e"
+    },
+    {
+      "path": "canvaskit/skwasm.wasm",
+      "size": 3593715,
+      "sha256": "e540fd5e8303b7b68ec2718cb49e9c421f8ade3075b15e02a7059a62654df9a1"
+    },
+    {
+      "path": "canvaskit/webparagraph/canvaskit.js",
+      "size": 76114,
+      "sha256": "3110e3e4d9b7b5657d336f253aaca8acca5777cde9319fb69ac302d6ff5a8b23"
+    },
+    {
+      "path": "canvaskit/webparagraph/canvaskit.js.symbols",
+      "size": 963641,
+      "sha256": "44d6c47919106235cf32252252490cdf798d907ee874ba343ab53dc94bc2a9dc"
+    },
+    {
+      "path": "canvaskit/webparagraph/canvaskit.wasm",
+      "size": 3729129,
+      "sha256": "0ce1b05082efdc8529550e8a01f6ff0593972d55525035010e26f5600aa9f254"
+    },
+    {
+      "path": "canvaskit/wimp.js",
+      "size": 59127,
+      "sha256": "8fd8a47480c6eb0a374d159912d0b3fb15661b41f5c113ecdd39c2f01f2bee46"
+    },
+    {
+      "path": "canvaskit/wimp.js.symbols",
+      "size": 1813030,
+      "sha256": "b4907ebd33131302a8cd99f7c55f52357bdfde04f421b605a616ba8764ae1de4"
+    },
+    {
+      "path": "canvaskit/wimp.wasm",
+      "size": 3581677,
+      "sha256": "e924eaafd801d41e017d178f3fd5cf8a417f641fe35c9ed34a4e1d7582283e0c"
+    },
+    {
+      "path": "favicon.png",
+      "size": 1499,
+      "sha256": "5ddfa3311e652db11e86ab8cb443e4d891d744a3d0173fd251b1ab3cb65ab069"
+    },
+    {
+      "path": "flutter_bootstrap.js",
+      "size": 13971,
+      "sha256": "31bc1a47ec62b0465a89a238d17a40ec246a24397fb481e792e026b9a3118c40"
+    },
+    {
+      "path": "flutter.js",
+      "size": 12136,
+      "sha256": "2beb1ce6b159c71540aa66030af1d7964b6a92377cc78473745e02f97b74effe"
+    },
+    {
+      "path": "icons/apple-touch-icon.png",
+      "size": 28259,
+      "sha256": "1f776db815ace446b0d8f439ef05df7a80d671f3b3387537451a171220fba9fe"
+    },
+    {
+      "path": "icons/Icon-192.png",
+      "size": 27216,
+      "sha256": "b0f2a3ac03ec7478a76c7323e04cc063a0baabbc7932bd9f9007289bfa74418d"
+    },
+    {
+      "path": "icons/Icon-512.png",
+      "size": 199488,
+      "sha256": "0dbe9b16551c5253cc9bdd61c78a186b8d388f07ad2ced7dd8e334bcb221ca48"
+    },
+    {
+      "path": "icons/Icon-maskable-192.png",
+      "size": 27216,
+      "sha256": "b0f2a3ac03ec7478a76c7323e04cc063a0baabbc7932bd9f9007289bfa74418d"
+    },
+    {
+      "path": "icons/Icon-maskable-512.png",
+      "size": 199488,
+      "sha256": "0dbe9b16551c5253cc9bdd61c78a186b8d388f07ad2ced7dd8e334bcb221ca48"
+    },
+    {
+      "path": "index.html",
+      "size": 2552,
+      "sha256": "7f7663b770d4ebdfb098223029fb8f9884964d2e855fb611020a3fde38b33533"
+    },
+    {
+      "path": "main.dart.js",
+      "size": 2493860,
+      "sha256": "7488be00deb09a786e0bca49da414471eb3410c837da3c4d15da98bd441a6eda"
+    },
+    {
+      "path": "manifest.json",
+      "size": 853,
+      "sha256": "2f605530a21808fef2b954c78200d1e6e0ffdebd4ddd67fe97c6774eca3382d3"
+    },
+    {
+      "path": "pwa.js",
+      "size": 1038,
+      "sha256": "f2f246a70bf6c898ec6563de4a8b33f28f0ab8780808867c2255e06ea0d35303"
+    },
+    {
+      "path": "version.json",
+      "size": 86,
+      "sha256": "f3490f7cc7d08a161ecc25b5633b636c11caab467339b45889c1765a6548e7c3"
+    }
+  ]
+}

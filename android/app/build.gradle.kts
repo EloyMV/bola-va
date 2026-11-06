@@ -1,11 +1,31 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// La clave se conserva fuera del código y de los archivos de publicación.
+val releasePropertiesFile = rootProject.file("../.private/android/key.properties")
+val releaseProperties = Properties().apply {
+    if (releasePropertiesFile.isFile) {
+        releasePropertiesFile.inputStream().use { load(it) }
+    }
+}
+val releaseRequested = gradle.startParameter.taskNames.any {
+    it.contains("release", ignoreCase = true)
+}
+if (releaseRequested && !releasePropertiesFile.isFile) {
+    throw GradleException("Falta la firma privada de Bola Va: .private/android/key.properties")
+}
+
+fun releaseProperty(name: String): String =
+    releaseProperties.getProperty(name)
+        ?: throw GradleException("Falta '$name' en la configuración privada de firma")
+
 android {
-    namespace = "com.example.proyecto"
+    namespace = "es.bolava.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +35,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.proyecto"
+        applicationId = "es.bolava.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -29,11 +48,22 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (releasePropertiesFile.isFile) {
+            create("release") {
+                storeFile = rootProject.file(releaseProperty("storeFile"))
+                storePassword = releaseProperty("storePassword")
+                keyAlias = releaseProperty("keyAlias")
+                keyPassword = releaseProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            if (releasePropertiesFile.isFile) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }

@@ -401,10 +401,12 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           children: [
             const Icon(Icons.info_outline, color: AppColores.aviso, size: 20),
             const SizedBox(width: AppEspaciado.xs),
-            Text(
-              'Disponibilidad simulada',
-              style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: AppColores.aviso),
+            Expanded(
+              child: Text(
+                'Disponibilidad simulada',
+                style: Theme.of(context).textTheme.labelLarge
+                    ?.copyWith(color: AppColores.aviso),
+              ),
             ),
           ],
         ),
@@ -485,9 +487,11 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
               const SizedBox(width: AppEspaciado.xs),
               Text(media.toStringAsFixed(1), style: tema.textTheme.titleLarge),
               const SizedBox(width: AppEspaciado.xs),
-              Text(
-                '· ${_opiniones.length} ${_opiniones.length == 1 ? 'valoración' : 'valoraciones'}',
-                style: tema.textTheme.bodyMedium,
+              Expanded(
+                child: Text(
+                  '· ${_opiniones.length} ${_opiniones.length == 1 ? 'valoración' : 'valoraciones'}',
+                  style: tema.textTheme.bodyMedium,
+                ),
               ),
             ],
           ),

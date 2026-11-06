@@ -12,4 +12,3 @@
 
 - Utilizar datos fijos de demostración definidos en el código.
 - No añadir bases de datos, persistencia, servidores ni autenticación real en esta fase.
-- El login y los accesos sociales son simulados y utilizan siempre el mismo usuario ficticio, independientemente de lo escrito en los campos.

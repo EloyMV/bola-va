@@ -35,11 +35,16 @@ void usarMovilPequeno(WidgetTester tester) {
 }
 
 void main() {
-  testWidgets('La aplicación abre las pistas con el tema compartido', (
+  testWidgets('La aplicación abre el login con la contraseña oculta', (
     tester,
   ) async {
     await tester.pumpWidget(const MyApp());
-    expect(find.text('Pistas de pádel'), findsOneWidget);
+    expect(find.text('Bola Va'), findsOneWidget);
+    expect(find.text('Iniciar sesión'), findsOneWidget);
+    expect(find.text('Correo electrónico'), findsOneWidget);
+    expect(find.text('Contraseña'), findsOneWidget);
+    final campoClave = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(campoClave.obscureText, isTrue);
     expect(tester.takeException(), isNull);
   });
 
@@ -48,6 +53,9 @@ void main() {
   ) async {
     usarMovilPequeno(tester);
     await tester.pumpWidget(const MyApp());
+    await tester.ensureVisible(find.text('Entrar'));
+    await tester.tap(find.text('Entrar'));
+    await tester.pumpAndSettle();
 
     const tarjetaFinal = ValueKey<String>('espacio-card-pro');
     expect(find.byType(EspacioTarjeta), findsNWidgets(6));
@@ -65,8 +73,9 @@ void main() {
 
     await tester.tap(find.byKey(tarjetaFinal));
     await tester.pumpAndSettle();
-    expect(find.text('Pista Pro'), findsNWidgets(2));
-    expect(find.text('Capacidad: 4 jugadores'), findsOneWidget);
+    expect(find.text('Pista Pro'), findsOneWidget);
+    expect(find.text('Aforo'), findsOneWidget);
+    expect(find.text('4 jugadores'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
