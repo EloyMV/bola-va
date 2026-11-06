@@ -3,7 +3,7 @@ name: Publish Bola Va
 on:
   push:
     branches:
-      - eloy
+      - main
     paths:
       - publicacion/public/**
       - publicacion/scripts/build.mjs
