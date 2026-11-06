@@ -7,64 +7,196 @@ import 'app_espaciado.dart';
 /// Equivalente a la hoja de estilos global de una web.
 /// Los widgets Material heredan este tema sin repetir estilos en cada pantalla.
 abstract final class AppTema {
-  /// Variante de la paleta común para las pantallas de acceso.
+  /// Variante clara de acceso: superficies tranquilas y acciones en verde tinta.
   static ThemeData get acceso {
     final base = claro;
+    final texto = base.textTheme
+        .apply(
+          bodyColor: AppColores.accesoTinta,
+          displayColor: AppColores.accesoTinta,
+        )
+        .copyWith(
+          headlineLarge: base.textTheme.headlineLarge?.copyWith(
+            fontSize: 36,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -1.3,
+            height: 1.12,
+            color: AppColores.accesoTinta,
+          ),
+          headlineMedium: base.textTheme.headlineMedium?.copyWith(
+            fontSize: 30,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.8,
+            height: 1.18,
+            color: AppColores.accesoTinta,
+          ),
+          headlineSmall: base.textTheme.headlineSmall?.copyWith(
+            fontSize: 26,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.6,
+            height: 1.2,
+            color: AppColores.accesoTinta,
+          ),
+          bodyLarge: base.textTheme.bodyLarge?.copyWith(
+            fontSize: 15,
+            height: 1.55,
+            color: AppColores.accesoTextoSecundario,
+          ),
+          bodySmall: base.textTheme.bodySmall?.copyWith(
+            fontSize: 12,
+            height: 1.5,
+            color: AppColores.accesoTextoSecundario,
+          ),
+          labelLarge: base.textTheme.labelLarge?.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+            color: AppColores.accesoTinta,
+          ),
+        );
     final formaBoton = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppBordes.medio),
     );
+    final bordeCampo = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppBordes.medio),
+      borderSide: const BorderSide(color: AppColores.accesoBorde),
+    );
 
     return base.copyWith(
-      scaffoldBackgroundColor: AppColores.fondoAccesoProfundo,
+      colorScheme: base.colorScheme.copyWith(
+        primary: AppColores.accesoTinta,
+        onPrimary: AppColores.sobrePrimario,
+        primaryContainer: AppColores.accesoSuave,
+        onPrimaryContainer: AppColores.accesoTinta,
+        secondary: AppColores.primario,
+        secondaryContainer: AppColores.accesoSuave,
+        onSecondaryContainer: AppColores.primario,
+        surface: AppColores.superficie,
+        onSurface: AppColores.accesoTinta,
+        onSurfaceVariant: AppColores.accesoTextoSecundario,
+        outline: AppColores.accesoBorde,
+        outlineVariant: AppColores.accesoBorde,
+        surfaceContainerLow: AppColores.accesoSuave,
+        surfaceTint: AppColores.accesoTinta,
+      ),
+      textTheme: texto,
+      scaffoldBackgroundColor: AppColores.accesoFondo,
       appBarTheme: base.appBarTheme.copyWith(
-        backgroundColor: AppColores.primario,
-        foregroundColor: AppColores.sobrePrimario,
-        titleTextStyle: base.textTheme.titleMedium?.copyWith(
-          color: AppColores.sobrePrimario,
+        backgroundColor: AppColores.accesoFondo,
+        foregroundColor: AppColores.accesoTinta,
+        titleTextStyle: texto.titleMedium?.copyWith(
+          color: AppColores.accesoTinta,
         ),
       ),
       cardTheme: base.cardTheme.copyWith(
-        elevation: 4,
-        shadowColor: AppColores.texto.withValues(alpha: 0.16),
+        elevation: 0,
+        shadowColor: AppColores.accesoTinta.withValues(alpha: 0.06),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppBordes.grande),
+          side: const BorderSide(color: AppColores.accesoBorde, width: 0.8),
         ),
       ),
       inputDecorationTheme: base.inputDecorationTheme.copyWith(
-        fillColor: AppColores.fondo,
-        prefixIconColor: AppColores.primario,
+        fillColor: AppColores.superficie,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppEspaciado.md,
+          vertical: AppEspaciado.md,
+        ),
+        prefixIconColor: AppColores.accesoTextoSecundario,
+        suffixIconColor: AppColores.accesoTextoSecundario,
+        labelStyle: texto.bodyMedium?.copyWith(
+          color: AppColores.accesoTextoSecundario,
+        ),
+        floatingLabelStyle: texto.labelLarge?.copyWith(
+          fontSize: 13,
+          color: AppColores.accesoTinta,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: bordeCampo,
+        enabledBorder: bordeCampo,
+        disabledBorder: bordeCampo,
+        focusedBorder: bordeCampo.copyWith(
+          borderSide: const BorderSide(color: AppColores.primario, width: 1.5),
+        ),
+        hoverColor: AppColores.accesoSuave.withValues(alpha: 0.55),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColores.acento,
-          foregroundColor: AppColores.texto,
-          disabledBackgroundColor: AppColores.borde,
-          disabledForegroundColor: AppColores.textoSecundario,
-          minimumSize: const Size(48, 56),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppEspaciado.lg,
-            vertical: AppEspaciado.sm,
-          ),
-          shape: formaBoton,
-          textStyle: base.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        style:
+            FilledButton.styleFrom(
+              backgroundColor: AppColores.accesoTinta,
+              foregroundColor: AppColores.sobrePrimario,
+              disabledBackgroundColor: AppColores.accesoBorde,
+              disabledForegroundColor: AppColores.accesoTextoSecundario,
+              minimumSize: const Size(48, 54),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppEspaciado.lg,
+                vertical: AppEspaciado.sm,
+              ),
+              shape: formaBoton,
+              textStyle: texto.labelLarge?.copyWith(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ).copyWith(
+              animationDuration: const Duration(milliseconds: 180),
+              overlayColor: WidgetStateProperty.resolveWith((estados) {
+                if (estados.contains(WidgetState.pressed)) {
+                  return AppColores.superficie.withValues(alpha: 0.16);
+                }
+                if (estados.contains(WidgetState.hovered) ||
+                    estados.contains(WidgetState.focused)) {
+                  return AppColores.superficie.withValues(alpha: 0.09);
+                }
+                return Colors.transparent;
+              }),
+            ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColores.fondo,
-          foregroundColor: AppColores.texto,
-          minimumSize: const Size(48, 56),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppEspaciado.md,
-            vertical: AppEspaciado.sm,
-          ),
-          side: const BorderSide(color: AppColores.borde),
+        style:
+            OutlinedButton.styleFrom(
+              backgroundColor: AppColores.superficie,
+              foregroundColor: AppColores.accesoTinta,
+              minimumSize: const Size(48, 52),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppEspaciado.md,
+                vertical: AppEspaciado.sm,
+              ),
+              side: const BorderSide(color: AppColores.accesoBorde),
+              shape: formaBoton,
+              textStyle: texto.labelLarge,
+            ).copyWith(
+              animationDuration: const Duration(milliseconds: 180),
+              overlayColor: WidgetStateProperty.resolveWith((estados) {
+                if (estados.contains(WidgetState.hovered) ||
+                    estados.contains(WidgetState.focused) ||
+                    estados.contains(WidgetState.pressed)) {
+                  return AppColores.primario.withValues(alpha: 0.055);
+                }
+                return Colors.transparent;
+              }),
+              side: WidgetStateProperty.resolveWith((estados) {
+                return BorderSide(
+                  color:
+                      estados.contains(WidgetState.hovered) ||
+                          estados.contains(WidgetState.focused)
+                      ? AppColores.primario.withValues(alpha: 0.45)
+                      : AppColores.accesoBorde,
+                );
+              }),
+            ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColores.primario,
+          minimumSize: const Size(48, 48),
           shape: formaBoton,
-          textStyle: base.textTheme.labelLarge,
+          textStyle: texto.labelLarge,
         ),
+      ),
+      textSelectionTheme: base.textSelectionTheme.copyWith(
+        cursorColor: AppColores.accesoTinta,
+        selectionColor: AppColores.acento.withValues(alpha: 0.35),
+        selectionHandleColor: AppColores.accesoTinta,
       ),
     );
   }

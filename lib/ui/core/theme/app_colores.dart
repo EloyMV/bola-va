@@ -16,4 +16,11 @@ abstract final class AppColores {
   static const Color aviso = Color(0xFF8A5600);
   static const Color ocupado = Color(0xFF6B7280);
   static const Color sobrePrimario = Color(0xFFFFFFFF);
+
+  // La entrada del club utiliza una versión más tranquila de la identidad.
+  static const Color accesoFondo = Color(0xFFF4F3EE);
+  static const Color accesoTinta = Color(0xFF142E28);
+  static const Color accesoSuave = Color(0xFFEAF0E8);
+  static const Color accesoBorde = Color(0xFFDCE4DA);
+  static const Color accesoTextoSecundario = Color(0xFF69756E);
 }

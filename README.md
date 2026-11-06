@@ -18,10 +18,12 @@ reciben sus estilos automáticamente.
 | `app_tema.dart` | Tipografía y apariencia de los componentes Material. |
 
 Login y registro utilizan la variante `AppTema.acceso`, definida en ese mismo
-archivo: fondo con mezcla de azul profundo, verde y azul de pista, cabecera de texto blanco, panel blanco
-con esquinas redondeadas, campos con fondo suave y botones principales en lima.
+archivo: fondo marfil, texto verde tinta, campos blancos de borde discreto y
+botones principales oscuros. La lima se reserva para pequeños acentos de marca.
 `PaginaAcceso`, en `lib/ui/acceso/ui/`, comparte esta composición entre las dos
-pantallas y conserva el desplazamiento de `PaginaBase`.
+pantallas con un formulario de ancho limitado y desplazamiento propio.
+En escritorio añade un panel editorial con una pista de pádel dibujada con
+widgets. En móvil, o al ampliar mucho el texto, prioriza el formulario.
 
 La variante usa `claro.copyWith(...)`: parte del tema común y cambia solamente
 algunos estilos. El widget `Theme` la aplica a sus descendientes. Así, el acceso
@@ -29,19 +31,25 @@ tiene su propio aspecto y las demás pantallas mantienen `AppTema.claro`.
 Este uso de temas amplía la parte de decoración de los apuntes; la referencia
 es la [documentación oficial de Theme](https://api.flutter.dev/flutter/material/Theme-class.html).
 
-`FondoAcceso` añade el degradado con `LinearGradient` y coloca dos símbolos
-grandes en un `Stack`, siguiendo las [capas de los apuntes](https://jovisal1.github.io/ApuntesPMDM/widgets/contenedores/capas-con-stack/).
-`ImageFiltered` con `ImageFilter.blur` suaviza solamente esos símbolos; los textos
-y campos conservan su nitidez. El fondo es decorativo y permite pulsar y desplazar
-el contenido con normalidad. Estas propiedades de degradado y desenfoque amplían
-los ejemplos básicos de decoración del curso.
+`FondoAcceso` añade luces radiales suaves detrás de la interfaz; `PanelMarcaAcceso`
+compone la pista con bordes, filas y capas, siguiendo las
+[capas de los apuntes](https://jovisal1.github.io/ApuntesPMDM/widgets/contenedores/capas-con-stack/).
+`TweenAnimationBuilder` introduce el contenido con una transición breve de
+opacidad y desplazamiento. La animación termina, respeta la preferencia de reducir
+movimiento y no se repite mientras se escribe. Los botones responden al foco, al
+ratón y a las pulsaciones mediante los estados de Material.
+
+La animación amplía los ejemplos básicos del curso: `Tween` define el valor
+inicial y final, `duration` su duración y el constructor reconstruye el efecto
+durante la transición. Referencia: [TweenAnimationBuilder](https://api.flutter.dev/flutter/widgets/TweenAnimationBuilder-class.html).
 
 ## Icono de Bola Va
 
 El original está en `assets/images/bola_va_icono.png` y su descripción de generación
 en `assets/images/bola_va_icono.prompt.txt`. Se ha creado con la herramienta integrada
-de imágenes: pala blanca, bola lima y fondo azul/verde, sin texto para que sea legible
-a tamaño pequeño. La cabecera lo muestra con `Image.asset`, registrado en `pubspec.yaml`.
+de imágenes: monograma geométrico BV verde tinta, punto lima y fondo marfil,
+pensado para reconocerse a tamaño pequeño. La cabecera lo muestra con `Image.asset`,
+registrado en `pubspec.yaml`.
 
 El mismo diseño está preparado en los tamaños de los iconos existentes de Android,
 iOS, macOS, Windows y web, incluido el favicon. Los tamaños son exportaciones del
@@ -64,8 +72,9 @@ Para mantener el diseño común:
 El login y el registro incluyen sus campos y acciones simuladas. Las otras cinco
 pantallas conservan su base visual con título, descripción y estado vacío.
 Cada una acepta un widget `contenido` para añadir su formulario, lista o detalle
-sin reconstruir el diseño exterior. Los formularios
-de acceso tienen un ancho máximo de 440 y el contenido general, de 1100 píxeles
+sin reconstruir el diseño exterior. El formulario de acceso ocupa hasta 460
+píxeles lógicos en escritorio; la composición compacta llega a 480 y el contenido
+general de otras pantallas, a 1100 píxeles
 lógicos. La base adapta los márgenes al ancho disponible y permite desplazarse
 cuando el contenido crece o se abre el teclado.
 

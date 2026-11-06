@@ -44,7 +44,7 @@ class RegistroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PaginaAcceso(
       titulo: 'Crear cuenta',
-      cabecera: 'Únete a Bola Va',
+      cabecera: 'Bola Va',
       mensaje: 'Nos vemos en la pista.',
       child:
           contenido ??

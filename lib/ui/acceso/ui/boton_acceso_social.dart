@@ -17,7 +17,7 @@ class BotonAccesoSocial extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icono),
+      icon: Icon(icono, size: proveedor == 'Google' ? 28 : 20),
       label: Text('Continuar con $proveedor (simulado)'),
     );
   }
