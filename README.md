@@ -185,3 +185,31 @@ dart format lib test
 flutter analyze
 flutter test
 ```
+
+## Preparar una publicación
+
+La app actual es una demo: no guarda reservas ni datos de usuario. La PWA guarda
+en caché los recursos estáticos para poder arrancar sin conexión, pero esa caché
+no es una copia de datos ni sincroniza dispositivos.
+
+Para generar los artefactos desde la raíz del proyecto:
+
+```sh
+flutter build apk --release
+flutter build web --base-href /app/ --no-web-resources-cdn --no-wasm-dry-run
+node tool/package_pwa.mjs
+node publicacion/scripts/prepare-apk.mjs <apk> --version <x.y.z> --build-number <n> --min-android <versión> --application-id <id> --certificate-sha256 <hash> --architectures <lista>
+node publicacion/scripts/build.mjs
+```
+
+La carpeta `publicacion/dist/` es la raíz del sitio estático. Para GitHub Pages
+de este repositorio, compila con `--base-href /bola-va/app/` y ejecuta el
+empaquetador con `BOLA_PWA_SCOPE=/bola-va/app/`; en un dominio raíz se usa
+`/app/`. Los metadatos de `release.json` deben salir del APK verificado con
+`apksigner` y `aapt`, no de valores estimados.
+
+La firma release y su contraseña viven en `.private/android/`, excluida de Git.
+Conserva una copia privada y segura de toda esa carpeta: las versiones futuras
+deben usar el mismo certificado y keystore para poder actualizar la instalación.
+`node tool/setup_android_signing.mjs` solo genera una clave cuando no existe una;
+se niega a sobrescribir una firma previa.

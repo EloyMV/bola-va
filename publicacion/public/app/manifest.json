@@ -1,0 +1,37 @@
+{
+  "name": "Bola Va",
+  "short_name": "Bola Va",
+  "id": "/bola-va/app/",
+  "start_url": "/bola-va/app/",
+  "scope": "/bola-va/app/",
+  "display": "standalone",
+  "background_color": "#F4F3EE",
+  "theme_color": "#142E28",
+  "description": "Bola Va: reservas de pistas de pádel.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

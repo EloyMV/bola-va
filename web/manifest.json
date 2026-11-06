@@ -1,7 +1,9 @@
 {
     "name": "Bola Va",
     "short_name": "Bola Va",
-    "start_url": ".",
+    "id": "/app/",
+    "start_url": "/app/",
+    "scope": "/app/",
     "display": "standalone",
     "background_color": "#F4F3EE",
     "theme_color": "#142E28",
