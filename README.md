@@ -208,6 +208,21 @@ empaquetador con `BOLA_PWA_SCOPE=/bola-va/app/`; en un dominio raíz se usa
 `/app/`. Los metadatos de `release.json` deben salir del APK verificado con
 `apksigner` y `aapt`, no de valores estimados.
 
+### Actualizar el enlace de GitHub Pages
+
+El sitio se mantiene en https://eloymv.github.io/bola-va/ y la aplicación se abre
+en https://eloymv.github.io/bola-va/app/.
+
+Al subir a `main` cambios de `lib/`, `assets/`, `web/`, `pubspec`, el empaquetador
+o los archivos de publicación, GitHub Actions compila de nuevo la web con Flutter
+3.47.5 y publica el resultado. Ya no depende de actualizar a mano la copia
+compilada de `publicacion/public/app/`. También se puede ejecutar **Publish Bola
+Va → Run workflow** desde la pestaña Actions del repositorio. Hay que esperar a
+que termine correctamente el trabajo `deploy` para dar la página por actualizada.
+
+La descarga de Android sigue utilizando el APK preparado en `publicacion/public/apk/`;
+publicar la web no recompila ni cambia la firma de Android.
+
 La firma release y su contraseña viven en `.private/android/`, excluida de Git.
 Conserva una copia privada y segura de toda esa carpeta: las versiones futuras
 deben usar el mismo certificado y keystore para poder actualizar la instalación.
