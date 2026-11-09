@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colores.dart';
 import '../theme/app_espaciado.dart';
+import '../theme/app_preferencias.dart';
 
 /// Estados visuales; los datos y las reglas de las reservas se añaden aparte.
 enum EstadoReserva { confirmada, pendiente, cancelada }
@@ -26,20 +27,33 @@ class ReservaTarjeta extends StatelessWidget {
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
     final esOscuro = tema.brightness == Brightness.dark;
+    final apoyoDaltonismo = AppPreferencias.apoyoDaltonismo.value;
     final (etiqueta, colorEstado, iconoEstado) = switch (estado) {
       EstadoReserva.confirmada => (
         'Confirmada',
-        esOscuro ? AppColores.exitoOscuro : AppColores.exito,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.disponibleDaltonismoOscuro
+                  : AppColores.disponibleDaltonismo)
+            : (esOscuro ? AppColores.exitoOscuro : AppColores.exito),
         Icons.check_circle_outline,
       ),
       EstadoReserva.pendiente => (
         'Pendiente',
-        esOscuro ? AppColores.avisoOscuro : AppColores.aviso,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.pendienteDaltonismoOscuro
+                  : AppColores.pendienteDaltonismo)
+            : (esOscuro ? AppColores.avisoOscuro : AppColores.aviso),
         Icons.schedule,
       ),
       EstadoReserva.cancelada => (
         'Cancelada',
-        tema.colorScheme.error,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.canceladaDaltonismoOscuro
+                  : AppColores.canceladaDaltonismo)
+            : tema.colorScheme.error,
         Icons.cancel_outlined,
       ),
     };

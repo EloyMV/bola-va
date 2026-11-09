@@ -6,6 +6,8 @@ abstract final class AppPreferencias {
   static final tema = ValueNotifier<ThemeMode>(ThemeMode.light);
   static final avisosReservas = ValueNotifier<bool>(false);
   static final horarioFavorito = ValueNotifier<String>('Tarde');
+  static final escalaTexto = ValueNotifier<double>(1);
+  static final apoyoDaltonismo = ValueNotifier<bool>(false);
 
   static const horariosFavoritos = ['Mañana', 'Tarde', 'Noche'];
 }

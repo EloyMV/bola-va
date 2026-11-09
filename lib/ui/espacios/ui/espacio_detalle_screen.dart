@@ -8,6 +8,7 @@ import '../../../domain/models/franja_disponibilidad.dart';
 import '../../core/theme/app_bordes.dart';
 import '../../core/theme/app_colores.dart';
 import '../../core/theme/app_espaciado.dart';
+import '../../core/theme/app_preferencias.dart';
 import '../../core/ui/espacio_tarjeta.dart';
 import '../../core/ui/estado_vacio.dart';
 import '../../core/ui/pagina_base.dart';
@@ -395,9 +396,13 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
 
   Widget _contenidoDisponibilidad(BuildContext context, Espacio espacio) {
     final tema = Theme.of(context);
-    final colorAviso = tema.brightness == Brightness.dark
-        ? AppColores.avisoOscuro
-        : AppColores.aviso;
+    final colorAviso = AppPreferencias.apoyoDaltonismo.value
+        ? (tema.brightness == Brightness.dark
+              ? AppColores.disponibleDaltonismoOscuro
+              : AppColores.disponibleDaltonismo)
+        : (tema.brightness == Brightness.dark
+              ? AppColores.avisoOscuro
+              : AppColores.aviso);
     final dias = DatosDemo.disponibilidadSemana(espacio.id);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -455,7 +460,11 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
     final tema = Theme.of(context);
     final esOscuro = tema.brightness == Brightness.dark;
     final color = franja.libre
-        ? (esOscuro ? AppColores.exitoOscuro : AppColores.exito)
+        ? (AppPreferencias.apoyoDaltonismo.value
+              ? (esOscuro
+                    ? AppColores.disponibleDaltonismoOscuro
+                    : AppColores.disponibleDaltonismo)
+              : (esOscuro ? AppColores.exitoOscuro : AppColores.exito))
         : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
     return Chip(
       avatar: Icon(
