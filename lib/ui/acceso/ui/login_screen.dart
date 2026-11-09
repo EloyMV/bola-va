@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../data/services/datos_demo.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../espacios/ui/espacios_screen.dart';
 import 'aviso_acceso_simulado.dart';
@@ -20,16 +21,7 @@ class LoginScreen extends StatelessWidget {
     // Las tres formas de acceso abren el mismo usuario ficticio.
     navigator.pushAndRemoveUntil<void>(
       MaterialPageRoute<void>(
-        builder: (_) => EspaciosScreen(
-          nombreUsuario: 'Usuario demo',
-          onCerrarSesion: () {
-            // Conservamos el Navigator, no el contexto del login ya retirado.
-            navigator.pushAndRemoveUntil<void>(
-              MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-              (route) => false,
-            );
-          },
-        ),
+        builder: (_) => EspaciosScreen(nombreUsuario: DatosDemo.usuario.nombre),
       ),
       (route) => false,
     );
@@ -52,10 +44,10 @@ class LoginScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const AvisoAccesoSimulado(
+              AvisoAccesoSimulado(
                 titulo: 'Acceso simulado',
                 mensaje:
-                    'Entra como Usuario demo con cualquier dato. '
+                    'Entra como ${DatosDemo.usuario.nombre} con cualquier dato. '
                     'Ningún acceso conecta cuentas externas.',
               ),
               const SizedBox(height: AppEspaciado.lg),
@@ -63,10 +55,10 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const CampoAcceso(
+                    CampoAcceso(
                       etiqueta: 'Correo electrónico',
                       icono: Icons.mail_outline,
-                      valorInicial: 'demo@bolava.es',
+                      valorInicial: DatosDemo.usuario.correo,
                       tipoTeclado: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: AppEspaciado.md),
