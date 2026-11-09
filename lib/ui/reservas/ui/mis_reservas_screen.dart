@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/ui/estado_vacio.dart';
+import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/pagina_base.dart';
+import '../../core/ui/reserva_tarjeta.dart';
 
 /// Añade las reservas en [contenido] y usa Theme.of(context).textTheme.
 class MisReservasScreen extends StatelessWidget {
@@ -13,13 +14,31 @@ class MisReservasScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PaginaBase(
       titulo: 'Mis reservas',
-      subtitulo: 'Tus encuentros con la pista.',
+      subtitulo: 'Ejemplos precargados para esta demostración.',
       child:
           contenido ??
-          const EstadoVacio(
-            icono: Icons.event_note_outlined,
-            titulo: 'Todavía no hay reservas',
-            mensaje: 'Tus próximas partidas aparecerán aquí.',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'La reserva de prueba no se ha guardado. Esta lista no cambia '
+                'y solo contiene reservas de ejemplo.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: AppEspaciado.md),
+              const ReservaTarjeta(
+                nombreEspacio: 'Pista Panorámica',
+                fecha: 'Sábado, 14 de noviembre de 2026',
+                hora: 'De 10:00 a 11:30',
+              ),
+              const SizedBox(height: AppEspaciado.sm),
+              const ReservaTarjeta(
+                nombreEspacio: 'Pista Indoor',
+                fecha: 'Domingo, 15 de noviembre de 2026',
+                hora: 'De 16:00 a 17:00',
+                estado: EstadoReserva.pendiente,
+              ),
+            ],
           ),
     );
   }

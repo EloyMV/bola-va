@@ -41,6 +41,12 @@ abstract final class DatosDemo {
         ServicioExtra(nombre: 'Iluminación LED', icono: 'luz'),
         ServicioExtra(nombre: 'Vestuarios y duchas', icono: 'ducha'),
         ServicioExtra(nombre: 'Aparcamiento gratuito', icono: 'parking'),
+        ServicioExtra(
+          nombre: 'Alquiler de raquetas',
+          icono: 'raqueta',
+          precio: 4,
+        ),
+        ServicioExtra(nombre: 'Cesta de bolas', icono: 'pelotas', precio: 3),
       ],
       tarifaHora: 24,
       contacto: ContactoLocal(
@@ -72,7 +78,12 @@ abstract final class DatosDemo {
           'para partidos y torneos.',
       servicios: [
         ServicioExtra(nombre: 'Zona de descanso', icono: 'descanso'),
-        ServicioExtra(nombre: 'Alquiler de raquetas', icono: 'raqueta'),
+        ServicioExtra(
+          nombre: 'Alquiler de raquetas',
+          icono: 'raqueta',
+          precio: 5,
+        ),
+        ServicioExtra(nombre: 'Cesta de bolas', icono: 'pelotas', precio: 3),
         ServicioExtra(nombre: 'Vestuarios', icono: 'vestuario'),
       ],
       tarifaHora: 28,
@@ -105,7 +116,12 @@ abstract final class DatosDemo {
       servicios: [
         ServicioExtra(nombre: 'Pista cubierta', icono: 'cubierta'),
         ServicioExtra(nombre: 'Vestuarios y duchas', icono: 'ducha'),
-        ServicioExtra(nombre: 'Alquiler de raquetas', icono: 'raqueta'),
+        ServicioExtra(
+          nombre: 'Alquiler de raquetas',
+          icono: 'raqueta',
+          precio: 4,
+        ),
+        ServicioExtra(nombre: 'Cesta de bolas', icono: 'pelotas', precio: 3),
       ],
       tarifaHora: 26,
       contacto: ContactoLocal(
@@ -135,8 +151,16 @@ abstract final class DatosDemo {
       descripcion:
           'Ideal para aprender y perfeccionar tu técnica con sesiones guiadas.',
       servicios: [
-        ServicioExtra(nombre: 'Clases con monitor', icono: 'monitor'),
-        ServicioExtra(nombre: 'Material de iniciación', icono: 'raqueta'),
+        ServicioExtra(
+          nombre: 'Clases con monitor',
+          icono: 'monitor',
+          precio: 18,
+        ),
+        ServicioExtra(
+          nombre: 'Material de iniciación',
+          icono: 'raqueta',
+          precio: 3,
+        ),
         ServicioExtra(nombre: 'Taquillas', icono: 'taquilla'),
       ],
       tarifaHora: 22,
@@ -171,6 +195,12 @@ abstract final class DatosDemo {
         ServicioExtra(nombre: 'Aparcamiento', icono: 'parking'),
         ServicioExtra(nombre: 'Zona de descanso', icono: 'descanso'),
         ServicioExtra(nombre: 'Iluminación LED', icono: 'luz'),
+        ServicioExtra(
+          nombre: 'Alquiler de raquetas',
+          icono: 'raqueta',
+          precio: 4,
+        ),
+        ServicioExtra(nombre: 'Cesta de bolas', icono: 'pelotas', precio: 3),
       ],
       tarifaHora: 20,
       contacto: ContactoLocal(
@@ -204,6 +234,16 @@ abstract final class DatosDemo {
         ServicioExtra(nombre: 'Iluminación de competición', icono: 'luz'),
         ServicioExtra(nombre: 'Marcador manual', icono: 'marcador'),
         ServicioExtra(nombre: 'Vestuarios', icono: 'vestuario'),
+        ServicioExtra(
+          nombre: 'Entrenamiento con monitor',
+          icono: 'monitor',
+          precio: 20,
+        ),
+        ServicioExtra(
+          nombre: 'Alquiler de raquetas',
+          icono: 'raqueta',
+          precio: 5,
+        ),
       ],
       tarifaHora: 32,
       contacto: ContactoLocal(
