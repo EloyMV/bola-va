@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:proyecto/main.dart';
 import 'package:proyecto/ui/acceso/ui/login_screen.dart';
+import 'package:proyecto/ui/core/theme/app_colores.dart';
 import 'package:proyecto/ui/core/theme/app_preferencias.dart';
+import 'package:proyecto/ui/core/ui/reserva_tarjeta.dart';
 import 'package:proyecto/ui/espacios/ui/espacios_screen.dart';
 import 'package:proyecto/ui/perfil/ui/perfil_screen.dart';
 import 'package:proyecto/ui/reservas/ui/nueva_reserva_screen.dart';
@@ -11,6 +13,8 @@ void restaurarPreferencias() {
   AppPreferencias.tema.value = ThemeMode.light;
   AppPreferencias.avisosReservas.value = false;
   AppPreferencias.horarioFavorito.value = 'Tarde';
+  AppPreferencias.escalaTexto.value = 1;
+  AppPreferencias.apoyoDaltonismo.value = false;
 }
 
 Future<void> pulsar(WidgetTester tester, String texto) async {
@@ -110,6 +114,65 @@ void main() {
       Theme.of(tester.element(find.byType(PerfilScreen))).brightness,
       Brightness.light,
     );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('El tamaño de texto se aplica a toda la aplicación', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 1.2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpWidget(const MyApp());
+    expect(
+      MediaQuery.textScalerOf(tester.element(find.byType(LoginScreen)))
+          .scale(10),
+      12,
+    );
+
+    await abrirPerfil(tester);
+    final controlTexto = tester.widget<Slider>(find.byType(Slider));
+    controlTexto.onChanged!(1.4);
+    await tester.pumpAndSettle();
+    expect(AppPreferencias.escalaTexto.value, 1.4);
+    expect(
+      MediaQuery.textScalerOf(tester.element(find.byType(PerfilScreen)))
+          .scale(10),
+      closeTo(16.8, 0.0001),
+    );
+    expect(find.text('Tamaño del texto: 140 %'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('El apoyo para daltonismo cambia los colores de los estados', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(),
+        home: const ReservaTarjeta(
+          nombreEspacio: 'Pista Central',
+          fecha: 'Hoy',
+          hora: '18:00',
+        ),
+      ),
+    );
+    final chipAntes = tester.widget<Chip>(find.byType(Chip));
+    expect(chipAntes.labelStyle?.color, AppColores.exito);
+
+    AppPreferencias.apoyoDaltonismo.value = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.light(),
+        home: const ReservaTarjeta(
+          nombreEspacio: 'Pista Central',
+          fecha: 'Hoy',
+          hora: '18:00',
+        ),
+      ),
+    );
+    final chipDespues = tester.widget<Chip>(find.byType(Chip));
+    expect(chipDespues.labelStyle?.color, AppColores.disponibleDaltonismo);
+    expect(find.text('Confirmada'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

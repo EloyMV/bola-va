@@ -4,6 +4,7 @@ import '../../../domain/models/espacio.dart';
 import '../theme/app_bordes.dart';
 import '../theme/app_colores.dart';
 import '../theme/app_espaciado.dart';
+import '../theme/app_preferencias.dart';
 
 /// Tarjeta visual de una pista. Recibe textos y una acción desde la pantalla.
 class EspacioTarjeta extends StatelessWidget {
@@ -46,7 +47,11 @@ class EspacioTarjeta extends StatelessWidget {
     final detalleVisible = detalle ?? espacio?.descripcion;
     final disponibleVisible = espacio?.disponible ?? disponible;
     final colorEstado = disponibleVisible
-        ? (esOscuro ? AppColores.exitoOscuro : AppColores.exito)
+        ? (AppPreferencias.apoyoDaltonismo.value
+              ? (esOscuro
+                    ? AppColores.disponibleDaltonismoOscuro
+                    : AppColores.disponibleDaltonismo)
+              : (esOscuro ? AppColores.exitoOscuro : AppColores.exito))
         : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
 
     return Semantics(

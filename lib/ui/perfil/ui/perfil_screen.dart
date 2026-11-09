@@ -67,6 +67,8 @@ class PerfilScreen extends StatelessWidget {
                     children: [
                       const PreferenciasPerfil(),
                       const SizedBox(height: AppEspaciado.lg),
+                      const AccesibilidadPerfil(),
+                      const SizedBox(height: AppEspaciado.lg),
                       _informacionAplicacion(context),
                       const SizedBox(height: AppEspaciado.lg),
                       OutlinedButton.icon(
