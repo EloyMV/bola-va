@@ -5,10 +5,11 @@ En Flutter, los estilos se definen en Dart mediante temas y widgets.
 
 ## Estilos compartidos
 
-El tema se aplica a toda la aplicación desde `lib/main.dart`. Se utiliza un tema
-claro fijo, con verde oscuro, azul de pista y lima, sin descargar fuentes ni añadir
-dependencias. Botones, campos, tarjetas, navegación y selectores de fecha y hora
-reciben sus estilos automáticamente.
+El tema se aplica a toda la aplicación desde `lib/main.dart`. En Perfil se puede
+elegir apariencia clara, oscura o del sistema. Se mantienen los colores del club:
+verde, azul de pista y lima. Las fuentes se incluyen en el proyecto. Botones,
+campos, tarjetas, navegación y selectores de fecha y hora reciben sus estilos
+automáticamente.
 
 | Archivo en `lib/ui/core/theme/` | Qué se define aquí |
 | --- | --- |
@@ -16,18 +17,20 @@ reciben sus estilos automáticamente.
 | `app_espaciado.dart` | Separaciones, márgenes y anchos máximos. |
 | `app_bordes.dart` | Radios de esquinas. |
 | `app_tema.dart` | Tipografía y apariencia de los componentes Material. |
+| `app_preferencias.dart` | Apariencia, avisos y horario favorito durante la ejecución. |
 
-Login y registro utilizan la variante `AppTema.acceso`, definida en ese mismo
-archivo: fondo marfil, texto verde tinta, campos blancos de borde discreto y
-botones principales oscuros. La lima se reserva para pequeños acentos de marca.
+Login y registro utilizan `AppTema.acceso` o `AppTema.accesoOscuro`, según la
+apariencia elegida. En claro combinan fondo marfil, texto verde tinta y campos
+blancos; en oscuro adaptan superficies, texto y controles. La lima se reserva
+para acentos de marca.
 `PaginaAcceso`, en `lib/ui/acceso/ui/`, comparte esta composición entre las dos
 pantallas con un formulario de ancho limitado y desplazamiento propio.
 En escritorio añade un panel editorial con una pista de pádel dibujada con
 widgets. En móvil, o al ampliar mucho el texto, prioriza el formulario.
 
-La variante usa `claro.copyWith(...)`: parte del tema común y cambia solamente
-algunos estilos. El widget `Theme` la aplica a sus descendientes. Así, el acceso
-tiene su propio aspecto y las demás pantallas mantienen `AppTema.claro`.
+La variante parte del tema común y cambia algunos estilos con `copyWith(...)`.
+El widget `Theme` la aplica a sus descendientes. Así, el acceso tiene su propio
+aspecto y las demás pantallas utilizan `AppTema.claro` o `AppTema.oscuro`.
 Este uso de temas amplía la parte de decoración de los apuntes; la referencia
 es la [documentación oficial de Theme](https://api.flutter.dev/flutter/material/Theme-class.html).
 
@@ -116,13 +119,14 @@ Widget ejemploAcceso() {
 
 Los campos ya usan los bordes, colores y textos del tema.
 
-## Login simulado
+## Login
 
 Al arrancar se muestra `LoginScreen`. Los campos están rellenados con
-`demo@bolava.es` y `demopadel`; la contraseña se muestra oculta. Se puede cambiar
-o borrar cualquier dato: Entrar siempre abre la cuenta ficticia «Usuario demo».
-Google y Apple hacen lo mismo y están identificados como simulados. No se
-comprueban credenciales ni se conectan cuentas externas.
+`alex.garcia@bolava.es` y `padel1234`; la contraseña se muestra oculta. Se puede
+cambiar o borrar cualquier dato: Entrar abre la cuenta de «Álex García».
+Google y Apple conducen al mismo acceso. En esta fase no se comprueban
+credenciales ni se conectan cuentas externas; la interfaz no muestra carteles
+de simulación.
 
 Los componentes específicos están en `lib/ui/acceso/ui/`:
 
@@ -130,8 +134,6 @@ Los componentes específicos están en `lib/ui/acceso/ui/`:
   variante `esContrasena`. Se reutiliza para nombre, correo y contraseñas.
 - `BotonAccesoSocial`: recibe proveedor, icono y acción. Se reutiliza para Google
   y Apple con el mismo aspecto.
-- `AvisoAccesoSimulado`: recibe título y mensaje. Login y registro reutilizan
-  esta tarjeta para explicar su funcionamiento de demostración.
 
 `TextFormField` dibuja cada campo y `initialValue` aporta su texto inicial. En
 esta demostración no hace falta guardar ni validar lo escrito. `Form` agrupa
@@ -153,14 +155,14 @@ Referencias del curso: [TextFormField](https://jovisal1.github.io/ApuntesPMDM/fo
 [Navigator](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/navegacion/entre-pantallas/)
 y [componentes del catálogo](https://jovisal1.github.io/ApuntesPMDM/widgets/configuracion-de-un-asistente-de-ia/el-proyecto-del-catalogo/).
 
-## Registro simulado
+## Registro
 
 `RegistroScreen` reutiliza `CampoAcceso` para nombre y apellidos, correo,
 contraseña y repetición de contraseña. Los cuatro campos llevan etiquetas
 visibles y datos fijos precargados; las dos contraseñas están ocultas. Cambiar
 los textos no crea una cuenta ni modifica el usuario de demostración.
 
-Crear cuenta de prueba abre una confirmación con `showDialog` y `AlertDialog`,
+Crear cuenta abre una confirmación con `showDialog` y `AlertDialog`,
 como en el apartado de [diálogos del curso](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/navegacion/dialogos/).
 El diálogo permite seguir en el registro o volver al login. `await` espera la
 respuesta: el botón Volver al login devuelve `true` al cerrar el diálogo y
@@ -175,17 +177,35 @@ ni a su DTO. Al abrir de nuevo el registro reaparecen los valores de demostraci�
 ## Perfil y ajustes
 
 `PerfilScreen`, en `lib/ui/perfil/ui/`, muestra el usuario ficticio compartido
-con el login y el registro: «Usuario demo», `demo@bolava.es` e iniciales UD.
+con el login y el registro: «Álex García», `alex.garcia@bolava.es` e iniciales AG.
 `Usuario`, en `domain/models/`, contiene solo información pública, y su instancia
 fija está en `DatosDemo`. Escribir otros datos en el acceso o registro no modifica
 ese usuario ni crea una cuenta.
 
 `TarjetaUsuario` muestra la identidad con `CircleAvatar`. `SeccionPerfil` agrupa
-las preferencias y la información del proyecto con el tema común. Las preferencias
-son ejemplos fijos: tema claro, avisos desactivados y horario de tarde. Se identifican
-como ejemplos y no se modifican ni guardan. La versión mostrada es `1.0.0`,
+las preferencias y la información del proyecto con el tema común. `PreferenciasPerfil`
+permite elegir Claro, Oscuro o Sistema, activar recomendaciones al preparar una
+reserva y seleccionar Mañana, Tarde o Noche como horario favorito. La versión mostrada es `1.0.0`,
 compilación `1`, igual que `pubspec.yaml`; si cambia la versión del proyecto,
 hay que actualizar también ese texto fijo.
+
+`AppPreferencias` comparte estos tres valores con `ValueNotifier`. Al asignar
+un nuevo `.value`, avisa a los `ValueListenableBuilder` que lo están escuchando
+para que actualicen la interfaz. Es una ampliación de los ejemplos básicos del
+curso necesaria para comunicar los ajustes entre pantallas, sin añadir paquetes.
+Referencias oficiales: [ValueNotifier](https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html)
+y [ValueListenableBuilder](https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html).
+
+Los desplegables utilizan `DropdownButtonFormField` y la casilla de avisos,
+`CheckboxListTile`, como en los [controles de selección de los apuntes](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/controles-de-entrada/seleccion-y-opciones/).
+La apariencia afecta también al login y al registro; Sistema sigue la apariencia
+del dispositivo. El horario favorito se selecciona inicialmente en Nueva reserva:
+cambiarlo para una partida no modifica la preferencia general. Activar los avisos
+muestra una recomendación en esa pantalla; desactivarlos la oculta.
+
+Los ajustes se conservan al navegar y cerrar sesión mientras la aplicación
+sigue abierta. Al reiniciarla vuelven a Claro, avisos desactivados y Tarde.
+No se añade persistencia ni se envían notificaciones fuera de la app.
 
 Espacios, Mis reservas y Perfil utilizan los mismos botones y
 `Navigator.pushReplacement`: al elegir otra sección se sustituye la actual,

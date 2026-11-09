@@ -6,10 +6,11 @@ import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/pagina_base.dart';
 import '../../espacios/ui/espacios_screen.dart';
 import '../../reservas/ui/mis_reservas_screen.dart';
+import 'preferencias_perfil.dart';
 import 'seccion_perfil.dart';
 import 'tarjeta_usuario.dart';
 
-/// Perfil y preferencias de demostración; no modifica ni persiste datos.
+/// Información del usuario y ajustes compartidos de la aplicación.
 class PerfilScreen extends StatelessWidget {
   const PerfilScreen({super.key, this.contenido});
 
@@ -64,7 +65,7 @@ class PerfilScreen extends StatelessWidget {
                   final ajustes = Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _preferencias(context),
+                      const PreferenciasPerfil(),
                       const SizedBox(height: AppEspaciado.lg),
                       _informacionAplicacion(context),
                       const SizedBox(height: AppEspaciado.lg),
@@ -116,46 +117,9 @@ class PerfilScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: AppEspaciado.xs),
-          const Text('Todavía no hay reservas en esta demostración.'),
+          const Text('Todavía no tienes reservas.'),
           const SizedBox(height: AppEspaciado.sm),
           const Text('Consulta los espacios y prepara tu próxima partida.'),
-        ],
-      ),
-    );
-  }
-
-  Widget _preferencias(BuildContext context) {
-    return SeccionPerfil(
-      titulo: 'Preferencias',
-      icono: Icons.tune_outlined,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Valores fijos de ejemplo; en esta entrega no se modifican.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: AppEspaciado.sm),
-          const ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.light_mode_outlined),
-            title: Text('Apariencia'),
-            subtitle: Text('Tema claro · Ejemplo fijo'),
-          ),
-          const Divider(height: AppEspaciado.md),
-          const ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.notifications_none_outlined),
-            title: Text('Avisos de reservas'),
-            subtitle: Text('Desactivados · Ejemplo fijo'),
-          ),
-          const Divider(height: AppEspaciado.md),
-          const ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.wb_twilight_outlined),
-            title: Text('Horario favorito'),
-            subtitle: Text('Tarde · Ejemplo fijo'),
-          ),
         ],
       ),
     );
@@ -187,7 +151,7 @@ class PerfilScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: AppEspaciado.xxs),
-                    // Valor de demostración, igual que version en pubspec.yaml.
+                    // Igual que version en pubspec.yaml.
                     const Text('Versión 1.0.0 · Compilación 1'),
                   ],
                 ),
@@ -196,13 +160,8 @@ class PerfilScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppEspaciado.md),
           const Text(
-            'Proyecto de clase desarrollado en Flutter para consultar pistas '
-            'de pádel y presentar un proceso de reserva simulado.',
-          ),
-          const SizedBox(height: AppEspaciado.sm),
-          Text(
-            'Acceso y datos de prueba. No se crean cuentas ni reservas reales.',
-            style: Theme.of(context).textTheme.bodySmall,
+            'Aplicación de reservas de pistas de pádel desarrollada en Flutter. '
+            'Encuentra tu pista y prepara tu próxima partida.',
           ),
         ],
       ),

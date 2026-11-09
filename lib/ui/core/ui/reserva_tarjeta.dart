@@ -25,20 +25,21 @@ class ReservaTarjeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final esOscuro = tema.brightness == Brightness.dark;
     final (etiqueta, colorEstado, iconoEstado) = switch (estado) {
       EstadoReserva.confirmada => (
         'Confirmada',
-        AppColores.exito,
+        esOscuro ? AppColores.exitoOscuro : AppColores.exito,
         Icons.check_circle_outline,
       ),
       EstadoReserva.pendiente => (
         'Pendiente',
-        AppColores.aviso,
+        esOscuro ? AppColores.avisoOscuro : AppColores.aviso,
         Icons.schedule,
       ),
       EstadoReserva.cancelada => (
         'Cancelada',
-        AppColores.error,
+        tema.colorScheme.error,
         Icons.cancel_outlined,
       ),
     };

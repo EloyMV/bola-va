@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colores.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/theme/app_tema.dart';
 import 'fondo_acceso.dart';
@@ -23,14 +22,16 @@ class PaginaAcceso extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tema = AppTema.acceso;
+    final tema = Theme.of(context).brightness == Brightness.dark
+        ? AppTema.accesoOscuro
+        : AppTema.acceso;
     final puedeVolver = ModalRoute.of(context)?.canPop ?? false;
     final reducirMovimiento = MediaQuery.disableAnimationsOf(context);
 
     return Theme(
       data: tema,
       child: Scaffold(
-        backgroundColor: AppColores.accesoFondo,
+        backgroundColor: tema.scaffoldBackgroundColor,
         body: Stack(
           children: [
             const Positioned.fill(
@@ -145,12 +146,14 @@ class PaginaAcceso extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppEspaciado.lg),
       decoration: BoxDecoration(
-        color: AppColores.superficie,
+        color: tema.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColores.accesoBorde),
+        border: Border.all(color: tema.colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColores.accesoTinta.withValues(alpha: 0.045),
+            color: Colors.black.withValues(
+              alpha: tema.brightness == Brightness.dark ? 0.14 : 0.045,
+            ),
             blurRadius: 36,
             offset: const Offset(0, 16),
           ),
@@ -167,7 +170,7 @@ class PaginaAcceso extends StatelessWidget {
           Text(
             'TU ESPACIO EN EL CLUB',
             style: tema.textTheme.labelSmall?.copyWith(
-              color: AppColores.accesoTextoSecundario,
+              color: tema.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.6,
             ),
@@ -176,7 +179,7 @@ class PaginaAcceso extends StatelessWidget {
           Text(
             titulo,
             style: tema.textTheme.headlineMedium?.copyWith(
-              color: AppColores.accesoTinta,
+              color: tema.colorScheme.onSurface,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.8,
               height: 1.15,
@@ -186,7 +189,7 @@ class PaginaAcceso extends StatelessWidget {
           Text(
             mensaje,
             style: tema.textTheme.bodyMedium?.copyWith(
-              color: AppColores.accesoTextoSecundario,
+              color: tema.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppEspaciado.lg),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../data/services/datos_demo.dart';
 import '../../core/theme/app_espaciado.dart';
-import 'aviso_acceso_simulado.dart';
 import 'campo_acceso.dart';
 import 'pagina_acceso.dart';
 
@@ -17,12 +16,8 @@ class RegistroScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         scrollable: true,
-        title: const Text('Registro de prueba completado'),
-        content: Text(
-          'Esta confirmación es simulada: no se ha creado ninguna cuenta '
-          'ni se han guardado los datos. '
-          'Vuelve al inicio de sesión para entrar como ${DatosDemo.usuario.nombre}.',
-        ),
+        title: const Text('Todo listo'),
+        content: const Text('Vuelve al inicio de sesión para continuar.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -52,13 +47,6 @@ class RegistroScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const AvisoAccesoSimulado(
-                titulo: 'Registro simulado',
-                mensaje:
-                    'Prueba el formulario con datos ficticios. '
-                    'No se crea ni guarda una cuenta.',
-              ),
-              const SizedBox(height: AppEspaciado.lg),
               Form(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,20 +68,20 @@ class RegistroScreen extends StatelessWidget {
                     const CampoAcceso(
                       etiqueta: 'Contraseña',
                       icono: Icons.lock_outline,
-                      valorInicial: 'demopadel',
+                      valorInicial: 'padel1234',
                       esContrasena: true,
                     ),
                     const SizedBox(height: AppEspaciado.md),
                     const CampoAcceso(
                       etiqueta: 'Repetir contraseña',
                       icono: Icons.lock_outline,
-                      valorInicial: 'demopadel',
+                      valorInicial: 'padel1234',
                       esContrasena: true,
                     ),
                     const SizedBox(height: AppEspaciado.lg),
                     FilledButton(
                       onPressed: () => _mostrarConfirmacion(context),
-                      child: const Text('Crear cuenta de prueba'),
+                      child: const Text('Crear cuenta'),
                     ),
                   ],
                 ),

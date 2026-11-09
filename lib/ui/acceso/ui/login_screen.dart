@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../data/services/datos_demo.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../espacios/ui/espacios_screen.dart';
-import 'aviso_acceso_simulado.dart';
 import 'boton_acceso_social.dart';
 import 'campo_acceso.dart';
 import 'pagina_acceso.dart';
@@ -44,13 +43,6 @@ class LoginScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AvisoAccesoSimulado(
-                titulo: 'Acceso simulado',
-                mensaje:
-                    'Entra como ${DatosDemo.usuario.nombre} con cualquier dato. '
-                    'Ningún acceso conecta cuentas externas.',
-              ),
-              const SizedBox(height: AppEspaciado.lg),
               Form(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -65,7 +57,7 @@ class LoginScreen extends StatelessWidget {
                     const CampoAcceso(
                       etiqueta: 'Contraseña',
                       icono: Icons.lock_outline,
-                      valorInicial: 'demopadel',
+                      valorInicial: 'padel1234',
                       esContrasena: true,
                     ),
                     const SizedBox(height: AppEspaciado.lg),

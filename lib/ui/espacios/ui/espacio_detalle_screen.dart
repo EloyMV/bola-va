@@ -254,6 +254,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
   }
 
   Widget _carrusel(BuildContext context, Espacio espacio) {
+    final tema = Theme.of(context);
     final imagenes = espacio.galeriaImagenes;
     return Column(
       children: [
@@ -288,8 +289,8 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
                 height: 8,
                 decoration: BoxDecoration(
                   color: indice == _indiceImagenActual
-                      ? AppColores.primario
-                      : AppColores.borde,
+                      ? tema.colorScheme.primary
+                      : tema.colorScheme.outlineVariant,
                   borderRadius: BorderRadius.circular(AppBordes.redondo),
                 ),
               ),
@@ -393,19 +394,22 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
   }
 
   Widget _contenidoDisponibilidad(BuildContext context, Espacio espacio) {
+    final tema = Theme.of(context);
+    final colorAviso = tema.brightness == Brightness.dark
+        ? AppColores.avisoOscuro
+        : AppColores.aviso;
     final dias = DatosDemo.disponibilidadSemana(espacio.id);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            const Icon(Icons.info_outline, color: AppColores.aviso, size: 20),
+            Icon(Icons.info_outline, color: colorAviso, size: 20),
             const SizedBox(width: AppEspaciado.xs),
             Expanded(
               child: Text(
-                'Disponibilidad simulada',
-                style: Theme.of(context).textTheme.labelLarge
-                    ?.copyWith(color: AppColores.aviso),
+                'Horarios de esta semana',
+                style: tema.textTheme.labelLarge?.copyWith(color: colorAviso),
               ),
             ),
           ],
@@ -448,7 +452,11 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
   }
 
   Widget _chipFranja(BuildContext context, FranjaDisponibilidad franja) {
-    final color = franja.libre ? AppColores.exito : AppColores.ocupado;
+    final tema = Theme.of(context);
+    final esOscuro = tema.brightness == Brightness.dark;
+    final color = franja.libre
+        ? (esOscuro ? AppColores.exitoOscuro : AppColores.exito)
+        : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
     return Chip(
       avatar: Icon(
         franja.libre ? Icons.check_circle_outline : Icons.block_outlined,
@@ -458,8 +466,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
       label: Text(
         '${franja.horaInicio}–${franja.horaFin} · ${franja.libre ? 'Libre' : 'Ocupada'}',
       ),
-      labelStyle: Theme.of(context).textTheme.labelMedium
-          ?.copyWith(color: color),
+      labelStyle: tema.textTheme.labelMedium?.copyWith(color: color),
       backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
@@ -467,6 +474,9 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
 
   Widget _contenidoOpiniones(BuildContext context) {
     final tema = Theme.of(context);
+    final colorEstrellas = tema.brightness == Brightness.dark
+        ? AppColores.avisoOscuro
+        : AppColores.aviso;
     final media = _opiniones.isEmpty
         ? 0.0
         : _opiniones.fold<int>(
@@ -483,7 +493,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
         else ...[
           Row(
             children: [
-              const Icon(Icons.star, color: AppColores.aviso),
+              Icon(Icons.star, color: colorEstrellas),
               const SizedBox(width: AppEspaciado.xs),
               Text(media.toStringAsFixed(1), style: tema.textTheme.titleLarge),
               const SizedBox(width: AppEspaciado.xs),
@@ -504,7 +514,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
         const SizedBox(height: AppEspaciado.md),
         const Divider(),
         const SizedBox(height: AppEspaciado.sm),
-        Text('Añadir una opinión de prueba', style: tema.textTheme.titleMedium),
+        Text('Añadir una opinión', style: tema.textTheme.titleMedium),
         const SizedBox(height: AppEspaciado.xs),
         TextField(
           controller: _controladorOpinion,
@@ -537,8 +547,8 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
                       ? Icons.star
                       : Icons.star_border,
                   color: puntuacion <= _puntuacionSeleccionada
-                      ? AppColores.aviso
-                      : AppColores.textoSecundario,
+                      ? colorEstrellas
+                      : tema.colorScheme.onSurfaceVariant,
                 ),
               ),
           ],
@@ -571,7 +581,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           const SizedBox(height: AppEspaciado.xxs),
           Row(
             children: [
-              _estrellas(opinion.puntuacion),
+              _estrellas(context, opinion.puntuacion),
               const SizedBox(width: AppEspaciado.xs),
               Text('${opinion.puntuacion}/5', style: tema.textTheme.bodySmall),
             ],
@@ -583,7 +593,11 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
     );
   }
 
-  Widget _estrellas(int puntuacion) {
+  Widget _estrellas(BuildContext context, int puntuacion) {
+    final tema = Theme.of(context);
+    final colorEstrellas = tema.brightness == Brightness.dark
+        ? AppColores.avisoOscuro
+        : AppColores.aviso;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -592,8 +606,8 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
             indice <= puntuacion ? Icons.star : Icons.star_border,
             size: 18,
             color: indice <= puntuacion
-                ? AppColores.aviso
-                : AppColores.textoSecundario,
+                ? colorEstrellas
+                : tema.colorScheme.onSurfaceVariant,
           ),
       ],
     );
@@ -614,7 +628,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
       _opiniones.insert(
         0,
         Comentario(
-          autor: 'Alex García',
+          autor: DatosDemo.usuario.nombre,
           fecha: _fechaActual(),
           texto: texto,
           puntuacion: _puntuacionSeleccionada,
