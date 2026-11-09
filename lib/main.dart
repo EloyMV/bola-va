@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'ui/core/theme/app_tema.dart';
+import 'ui/core/theme/app_preferencias.dart';
 import 'ui/acceso/ui/login_screen.dart';
 
 void main() {
@@ -12,12 +13,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bola Va',
-      debugShowCheckedModeBanner: false,
-      theme: AppTema.claro,
-      themeMode: ThemeMode.light,
-      home: const LoginScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: AppPreferencias.tema,
+      builder: (context, modoTema, child) => MaterialApp(
+        title: 'Bola Va',
+        debugShowCheckedModeBanner: false,
+        theme: AppTema.claro,
+        darkTheme: AppTema.oscuro,
+        themeMode: modoTema,
+        home: const LoginScreen(),
+      ),
     );
   }
 }

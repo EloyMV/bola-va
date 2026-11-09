@@ -16,7 +16,7 @@ Future<void> pulsar(WidgetTester tester, String texto) async {
 }
 
 void main() {
-  testWidgets('Perfil muestra la cuenta ficticia y preferencias de ejemplo', (
+  testWidgets('Perfil muestra la cuenta y los controles de preferencias', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -29,7 +29,10 @@ void main() {
     expect(find.text(DatosDemo.usuario.iniciales), findsOneWidget);
     expect(find.byType(CircleAvatar), findsOneWidget);
     expect(find.text('Preferencias'), findsOneWidget);
-    expect(find.textContaining('Ejemplo fijo'), findsWidgets);
+    expect(find.byType(DropdownButtonFormField<ThemeMode>), findsOneWidget);
+    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsOneWidget);
+    expect(find.textContaining('Ejemplo fijo'), findsNothing);
     expect(find.text('Sobre Bola Va'), findsOneWidget);
     expect(find.text('Versión 1.0.0 · Compilación 1'), findsOneWidget);
     expect(tester.takeException(), isNull);

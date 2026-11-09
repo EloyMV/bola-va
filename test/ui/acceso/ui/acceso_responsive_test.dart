@@ -7,8 +7,11 @@ import 'package:proyecto/ui/core/theme/app_tema.dart';
 import 'package:proyecto/ui/espacios/ui/espacios_screen.dart';
 
 Future<void> pulsar(WidgetTester tester, String texto) async {
-  await tester.ensureVisible(find.text(texto));
-  await tester.tap(find.text(texto));
+  final coincidencia = texto == 'Crear cuenta'
+      ? find.widgetWithText(FilledButton, texto)
+      : find.text(texto);
+  await tester.ensureVisible(coincidencia);
+  await tester.tap(coincidencia);
   await tester.pumpAndSettle();
 }
 
@@ -31,7 +34,7 @@ void main() {
 
       await pulsar(tester, 'Registrarse');
       expect(find.byType(RegistroScreen), findsOneWidget);
-      await pulsar(tester, 'Crear cuenta de prueba');
+      await pulsar(tester, 'Crear cuenta');
       expect(find.byType(AlertDialog), findsOneWidget);
       await pulsar(tester, 'Volver al login');
       expect(find.byType(BackButton), findsNothing);
@@ -68,7 +71,7 @@ void main() {
         find.byType(TextFormField).last,
         'clave de prueba',
       );
-      await pulsar(tester, 'Crear cuenta de prueba');
+      await pulsar(tester, 'Crear cuenta');
       await pulsar(tester, 'Volver al login');
       expect(find.byType(LoginScreen), findsOneWidget);
       expect(tester.takeException(), isNull);

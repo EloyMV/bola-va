@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:proyecto/data/services/datos_demo.dart';
 import 'package:proyecto/main.dart';
 import 'package:proyecto/ui/acceso/ui/login_screen.dart';
 import 'package:proyecto/ui/acceso/ui/registro_screen.dart';
@@ -26,7 +27,7 @@ void main() {
     await pulsar(tester, 'Entrar');
 
     expect(find.byType(EspaciosScreen), findsOneWidget);
-    expect(find.textContaining('Usuario demo'), findsOneWidget);
+    expect(find.textContaining(DatosDemo.usuario.nombre), findsOneWidget);
     expect(find.byType(LoginScreen), findsNothing);
 
     final navigator = Navigator.of(tester.element(find.byType(EspaciosScreen)));
@@ -41,10 +42,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(const MyApp());
-      await pulsar(tester, 'Continuar con $proveedor (simulado)');
+      await pulsar(tester, 'Continuar con $proveedor');
 
       expect(find.text('Pistas de pádel'), findsOneWidget);
-      expect(find.textContaining('Usuario demo'), findsOneWidget);
+      expect(find.textContaining(DatosDemo.usuario.nombre), findsOneWidget);
       final navigator = Navigator.of(
         tester.element(find.byType(EspaciosScreen)),
       );
@@ -60,7 +61,7 @@ void main() {
     await pulsar(tester, 'Registrarse');
 
     expect(find.byType(RegistroScreen), findsOneWidget);
-    expect(find.text('Crear cuenta'), findsOneWidget);
+    expect(find.text('Crear cuenta'), findsWidgets);
     await tester.pageBack();
     await tester.pumpAndSettle();
 
@@ -84,7 +85,7 @@ void main() {
 
     await pulsar(tester, 'Entrar');
     expect(find.byType(EspaciosScreen), findsOneWidget);
-    expect(find.textContaining('Usuario demo'), findsOneWidget);
+    expect(find.textContaining(DatosDemo.usuario.nombre), findsOneWidget);
   });
 
   testWidgets(

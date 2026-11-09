@@ -14,6 +14,8 @@ abstract final class AppColores {
   static const Color error = Color(0xFFB3261E);
   static const Color exito = Color(0xFF217A4B);
   static const Color aviso = Color(0xFF8A5600);
+  static const Color exitoOscuro = Color(0xFF8BDCA7);
+  static const Color avisoOscuro = Color(0xFFF3CA75);
   static const Color ocupado = Color(0xFF6B7280);
   static const Color sobrePrimario = Color(0xFFFFFFFF);
 

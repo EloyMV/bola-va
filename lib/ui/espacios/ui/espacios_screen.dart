@@ -25,8 +25,7 @@ class EspaciosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PaginaBase(
       titulo: 'Pistas de pádel',
-      subtitulo:
-          'Hola, ${nombreUsuario ?? DatosDemo.usuario.nombre}. Acceso simulado.',
+      subtitulo: 'Hola, ${nombreUsuario ?? DatosDemo.usuario.nombre}.',
       acciones: [
         IconButton(
           onPressed: onCerrarSesion ?? () => cerrarSesion(context),

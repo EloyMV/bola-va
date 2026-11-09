@@ -9,9 +9,9 @@ import '../../domain/models/usuario.dart';
 abstract final class DatosDemo {
   // Los accesos simulados y el perfil representan siempre a la misma persona.
   static const usuario = Usuario(
-    nombre: 'Usuario demo',
-    correo: 'demo@bolava.es',
-    iniciales: 'UD',
+    nombre: 'Álex García',
+    correo: 'alex.garcia@bolava.es',
+    iniciales: 'AG',
   );
 
   static const List<Comentario> _opinionesDemo = [

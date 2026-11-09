@@ -41,20 +41,6 @@ class TarjetaUsuario extends StatelessWidget {
               usuario.correo,
               style: texto.bodyLarge?.copyWith(color: colores.onPrimary),
             ),
-            const SizedBox(height: AppEspaciado.lg),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline, size: 18, color: colores.onPrimary),
-                const SizedBox(width: AppEspaciado.xs),
-                Expanded(
-                  child: Text(
-                    'Perfil ficticio. Los datos no se guardan.',
-                    style: texto.bodySmall?.copyWith(color: colores.onPrimary),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

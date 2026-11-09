@@ -36,6 +36,7 @@ class EspacioTarjeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final esOscuro = tema.brightness == Brightness.dark;
     final nombreVisible = espacio?.nombre ?? nombre!;
     final ubicacionVisible = espacio?.ubicacion ?? ubicacion!;
     final capacidadVisible =
@@ -45,8 +46,8 @@ class EspacioTarjeta extends StatelessWidget {
     final detalleVisible = detalle ?? espacio?.descripcion;
     final disponibleVisible = espacio?.disponible ?? disponible;
     final colorEstado = disponibleVisible
-        ? AppColores.exito
-        : AppColores.ocupado;
+        ? (esOscuro ? AppColores.exitoOscuro : AppColores.exito)
+        : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
 
     return Semantics(
       container: true,
