@@ -117,7 +117,7 @@ void main() {
     final campos = tester
         .widgetList<TextField>(find.byType(TextField))
         .toList();
-    expect(campos[0].controller!.text, 'Usuario Demo');
+    expect(campos[0].controller!.text, 'Usuario demo');
     expect(campos[2].controller!.text, 'demopadel');
   });
 

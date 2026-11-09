@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../data/services/datos_demo.dart';
 import '../../core/theme/app_espaciado.dart';
 import 'aviso_acceso_simulado.dart';
 import 'campo_acceso.dart';
@@ -17,10 +18,10 @@ class RegistroScreen extends StatelessWidget {
       builder: (dialogContext) => AlertDialog(
         scrollable: true,
         title: const Text('Registro de prueba completado'),
-        content: const Text(
+        content: Text(
           'Esta confirmación es simulada: no se ha creado ninguna cuenta '
           'ni se han guardado los datos. '
-          'Vuelve al inicio de sesión para entrar como Usuario demo.',
+          'Vuelve al inicio de sesión para entrar como ${DatosDemo.usuario.nombre}.',
         ),
         actions: [
           TextButton(
@@ -62,17 +63,17 @@ class RegistroScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const CampoAcceso(
+                    CampoAcceso(
                       etiqueta: 'Nombre y apellidos',
                       icono: Icons.person_outline,
-                      valorInicial: 'Usuario Demo',
+                      valorInicial: DatosDemo.usuario.nombre,
                       tipoTeclado: TextInputType.name,
                     ),
                     const SizedBox(height: AppEspaciado.md),
-                    const CampoAcceso(
+                    CampoAcceso(
                       etiqueta: 'Correo electrónico',
                       icono: Icons.mail_outline,
-                      valorInicial: 'demo@bolava.es',
+                      valorInicial: DatosDemo.usuario.correo,
                       tipoTeclado: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: AppEspaciado.md),

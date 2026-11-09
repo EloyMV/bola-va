@@ -69,8 +69,9 @@ Para mantener el diseño común:
 
 ## Pantallas preparadas
 
-El login y el registro incluyen sus campos y acciones simuladas. Las otras cinco
-pantallas conservan su base visual con título, descripción y estado vacío.
+El login y el registro incluyen sus campos y acciones simuladas. El catálogo
+muestra las pistas de demostración y el perfil incluye sus datos y preferencias.
+Las pantallas pendientes conservan su base visual con título, descripción y estado vacío.
 Cada una acepta un widget `contenido` para añadir su formulario, lista o detalle
 sin reconstruir el diseño exterior. El formulario de acceso ocupa hasta 460
 píxeles lógicos en escritorio; la composición compacta llega a 480 y el contenido
@@ -144,8 +145,9 @@ Entrar abre la pantalla principal actual. Su botón superior Cerrar sesión
 (icono de salida) vuelve a un login nuevo. Ambos cambios utilizan
 `pushAndRemoveUntil` con una condición que siempre devuelve `false`: se retiran
 todas las pantallas anteriores, para que Atrás no vuelva al acceso tras entrar
-ni a la sesión después de cerrarla. La pantalla principal recibe el nombre de
-demostración y la acción de cierre por su constructor.
+ni a la sesión después de cerrarla. El nombre y correo de la cuenta se obtienen
+de `DatosDemo.usuario`. Espacios y Perfil comparten la función `cerrarSesion`,
+definida en `lib/ui/acceso/ui/cerrar_sesion.dart`.
 
 Referencias del curso: [TextFormField](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/controles-de-entrada/texto-y-edicion/),
 [Navigator](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/navegacion/entre-pantallas/)
@@ -169,6 +171,34 @@ También se puede regresar con Volver al inicio de sesión, la flecha superior o
 Atrás. Entrar en la aplicación se hace siempre desde el login. No hay validación,
 base de datos ni guardado de campos; tampoco se añaden contraseñas a `Usuario`
 ni a su DTO. Al abrir de nuevo el registro reaparecen los valores de demostración.
+
+## Perfil y ajustes
+
+`PerfilScreen`, en `lib/ui/perfil/ui/`, muestra el usuario ficticio compartido
+con el login y el registro: «Usuario demo», `demo@bolava.es` e iniciales UD.
+`Usuario`, en `domain/models/`, contiene solo información pública, y su instancia
+fija está en `DatosDemo`. Escribir otros datos en el acceso o registro no modifica
+ese usuario ni crea una cuenta.
+
+`TarjetaUsuario` muestra la identidad con `CircleAvatar`. `SeccionPerfil` agrupa
+las preferencias y la información del proyecto con el tema común. Las preferencias
+son ejemplos fijos: tema claro, avisos desactivados y horario de tarde. Se identifican
+como ejemplos y no se modifican ni guardan. La versión mostrada es `1.0.0`,
+compilación `1`, igual que `pubspec.yaml`; si cambia la versión del proyecto,
+hay que actualizar también ese texto fijo.
+
+Espacios, Mis reservas y Perfil utilizan los mismos botones y
+`Navigator.pushReplacement`: al elegir otra sección se sustituye la actual,
+sin acumular copias. Los detalles de una pista siguen abriéndose con `push`
+para poder regresar al catálogo. Cerrar sesión utiliza `pushAndRemoveUntil`
+con una condición siempre falsa; elimina todas las rutas anteriores, incluso
+si existía alguna debajo del perfil. Atrás deja de poder abrir esa sesión.
+
+El perfil se organiza en dos columnas en escritorio y una en móvil o con texto
+grande, usando `LayoutBuilder` y `MediaQuery`, dentro del desplazamiento de
+`PaginaBase`. Referencias consultadas del curso:
+[Card, ListTile y CircleAvatar](https://jovisal1.github.io/ApuntesPMDM/widgets/otros/tarjetas-y-elementos-material/)
+y [operaciones de Navigator](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/navegacion/entre-pantallas/).
 
 ## Trabajar entre dos personas
 

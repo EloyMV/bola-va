@@ -4,8 +4,16 @@ import '../../domain/models/disponibilidad_dia.dart';
 import '../../domain/models/espacio.dart';
 import '../../domain/models/franja_disponibilidad.dart';
 import '../../domain/models/servicio_extra.dart';
+import '../../domain/models/usuario.dart';
 
 abstract final class DatosDemo {
+  // Los accesos simulados y el perfil representan siempre a la misma persona.
+  static const usuario = Usuario(
+    nombre: 'Usuario demo',
+    correo: 'demo@bolava.es',
+    iniciales: 'UD',
+  );
+
   static const List<Comentario> _opinionesDemo = [
     Comentario(
       autor: 'Lucía M.',
