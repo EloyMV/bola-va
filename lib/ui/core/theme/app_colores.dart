@@ -14,8 +14,16 @@ abstract final class AppColores {
   static const Color error = Color(0xFFB3261E);
   static const Color exito = Color(0xFF217A4B);
   static const Color aviso = Color(0xFF8A5600);
+  static const Color exitoOscuro = Color(0xFF8BDCA7);
+  static const Color avisoOscuro = Color(0xFFF3CA75);
   static const Color ocupado = Color(0xFF6B7280);
   static const Color sobrePrimario = Color(0xFFFFFFFF);
+  static const Color disponibleDaltonismo = Color(0xFF1565C0);
+  static const Color disponibleDaltonismoOscuro = Color(0xFF90CAF9);
+  static const Color pendienteDaltonismo = Color(0xFFEF6C00);
+  static const Color pendienteDaltonismoOscuro = Color(0xFFFFB74D);
+  static const Color canceladaDaltonismo = Color(0xFF6A1B9A);
+  static const Color canceladaDaltonismoOscuro = Color(0xFFCE93D8);
 
   // La entrada del club utiliza una versión más tranquila de la identidad.
   static const Color accesoFondo = Color(0xFFF4F3EE);

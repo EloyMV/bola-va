@@ -220,17 +220,15 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Ir a Espacios'));
+    await tester.tap(find.text('Espacios'));
     await tester.pumpAndSettle();
     expect(find.byType(EspaciosScreen), findsOneWidget);
     expect(find.text('Pistas de pádel'), findsOneWidget);
 
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Ir a Perfil'));
+    await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
     expect(find.byType(PerfilScreen), findsOneWidget);
-    expect(find.text('Mi perfil'), findsOneWidget);
+    expect(find.text('Perfil y ajustes'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

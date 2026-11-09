@@ -26,9 +26,9 @@ void main() {
     expect(find.text('Pádel'), findsOneWidget);
     expect(find.text('Viernes, 13 de noviembre de 2026'), findsOneWidget);
     expect(find.text('Hora de inicio'), findsOneWidget);
-    expect(find.text('18:00'), findsNWidgets(2));
+    expect(find.text('16:00'), findsNWidgets(2));
     expect(find.text('Hora de fin'), findsOneWidget);
-    expect(find.text('20:00'), findsOneWidget);
+    expect(find.text('18:00'), findsNWidgets(2));
     expect(find.textContaining('Asistentes (4/4)'), findsOneWidget);
     expect(find.textContaining('Alex García'), findsOneWidget);
     expect(find.text('Incluido'), findsNWidgets(3));
@@ -78,7 +78,7 @@ void main() {
     await tester.tap(find.text('14 nov 2026').last);
     await tester.pumpAndSettle();
 
-    final turno = find.byKey(const ValueKey('horario-16:00'));
+    final turno = find.byKey(const ValueKey('horario-14:00'));
     await tester.ensureVisible(turno);
     await tester.tap(turno);
     await tester.pumpAndSettle();
@@ -100,8 +100,8 @@ void main() {
 
     expect(find.byType(ConfirmacionReservaScreen), findsOneWidget);
     expect(find.text('Sábado, 14 de noviembre de 2026'), findsOneWidget);
+    expect(find.text('14:00'), findsOneWidget);
     expect(find.text('16:00'), findsOneWidget);
-    expect(find.text('18:00'), findsOneWidget);
     expect(find.textContaining('Asistentes (2/4)'), findsOneWidget);
     expect(find.text('Alex García, Lucía Martínez'), findsOneWidget);
     expect(tester.takeException(), isNull);

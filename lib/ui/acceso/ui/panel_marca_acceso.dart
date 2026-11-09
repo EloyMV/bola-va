@@ -35,7 +35,7 @@ class MarcaAcceso extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: sobreOscuro
                   ? AppColores.superficie
-                  : AppColores.accesoTinta,
+                  : Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.5,
             ),

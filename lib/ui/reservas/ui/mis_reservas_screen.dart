@@ -72,22 +72,24 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                 runSpacing: AppEspaciado.sm,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (context) => const EspaciosScreen(),
-                      ),
-                    ),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacement<void, void>(
+                          MaterialPageRoute<void>(
+                            builder: (context) => const EspaciosScreen(),
+                          ),
+                        ),
                     icon: const Icon(Icons.sports_tennis_outlined),
-                    label: const Text('Ir a Espacios'),
+                    label: const Text('Espacios'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (context) => const PerfilScreen(),
-                      ),
-                    ),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacement<void, void>(
+                          MaterialPageRoute<void>(
+                            builder: (context) => const PerfilScreen(),
+                          ),
+                        ),
                     icon: const Icon(Icons.person_outline),
-                    label: const Text('Ir a Perfil'),
+                    label: const Text('Perfil'),
                   ),
                 ],
               ),

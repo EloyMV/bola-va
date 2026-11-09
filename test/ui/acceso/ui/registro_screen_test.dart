@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:proyecto/data/services/datos_demo.dart';
 import 'package:proyecto/main.dart';
 import 'package:proyecto/ui/acceso/ui/login_screen.dart';
 import 'package:proyecto/ui/acceso/ui/registro_screen.dart';
@@ -7,8 +8,11 @@ import 'package:proyecto/ui/core/theme/app_tema.dart';
 import 'package:proyecto/ui/espacios/ui/espacios_screen.dart';
 
 Future<void> pulsar(WidgetTester tester, String texto) async {
-  await tester.ensureVisible(find.text(texto));
-  await tester.tap(find.text(texto));
+  final coincidencia = texto == 'Crear cuenta'
+      ? find.widgetWithText(FilledButton, texto)
+      : find.text(texto);
+  await tester.ensureVisible(coincidencia);
+  await tester.tap(coincidencia);
   await tester.pumpAndSettle();
 }
 
@@ -31,7 +35,7 @@ void main() {
     ]) {
       expect(find.text(etiqueta), findsOneWidget);
     }
-    expect(find.text('Registro simulado'), findsOneWidget);
+    expect(find.text('Registro simulado'), findsNothing);
     expect(find.byType(TextFormField), findsNWidgets(4));
     final campos = tester
         .widgetList<TextField>(find.byType(TextField))
@@ -53,11 +57,11 @@ void main() {
     );
     await tester.enterText(find.byType(TextFormField).at(2), 'una clave');
     await tester.enterText(find.byType(TextFormField).at(3), 'otra clave');
-    await pulsar(tester, 'Crear cuenta de prueba');
+    await pulsar(tester, 'Crear cuenta');
 
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(
-      find.textContaining('no se ha creado ninguna cuenta'),
+      find.text('Vuelve al inicio de sesión para continuar.'),
       findsOneWidget,
     );
     expect(find.byType(EspaciosScreen), findsNothing);
@@ -71,14 +75,14 @@ void main() {
 
     await pulsar(tester, 'Entrar');
     expect(find.byType(EspaciosScreen), findsOneWidget);
-    expect(find.textContaining('Usuario demo'), findsOneWidget);
+    expect(find.textContaining(DatosDemo.usuario.nombre), findsOneWidget);
   });
 
   testWidgets('Se puede cerrar la confirmación y usar el enlace al login', (
     tester,
   ) async {
     await abrirRegistro(tester);
-    await pulsar(tester, 'Crear cuenta de prueba');
+    await pulsar(tester, 'Crear cuenta');
     await pulsar(tester, 'Seguir aquí');
 
     expect(find.byType(AlertDialog), findsNothing);
@@ -92,7 +96,7 @@ void main() {
     'Atrás cierra el diálogo y después vuelve del registro al login',
     (tester) async {
       await abrirRegistro(tester);
-      await pulsar(tester, 'Crear cuenta de prueba');
+      await pulsar(tester, 'Crear cuenta');
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
@@ -117,8 +121,9 @@ void main() {
     final campos = tester
         .widgetList<TextField>(find.byType(TextField))
         .toList();
-    expect(campos[0].controller!.text, 'Usuario Demo');
-    expect(campos[2].controller!.text, 'demopadel');
+    expect(campos[0].controller!.text, DatosDemo.usuario.nombre);
+    expect(campos[1].controller!.text, DatosDemo.usuario.correo);
+    expect(campos[2].controller!.text, 'padel1234');
   });
 
   testWidgets(
@@ -145,7 +150,7 @@ void main() {
       await pulsar(tester, 'Registrarse');
       await tester.ensureVisible(find.byType(TextFormField).last);
       await tester.enterText(find.byType(TextFormField).last, 'otra clave');
-      await pulsar(tester, 'Crear cuenta de prueba');
+      await pulsar(tester, 'Crear cuenta');
 
       expect(find.byType(AlertDialog), findsOneWidget);
       expect(tester.takeException(), isNull);

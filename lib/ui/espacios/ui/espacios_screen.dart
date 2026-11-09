@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/services/datos_demo.dart';
+import '../../acceso/ui/cerrar_sesion.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/espacio_tarjeta.dart';
 import '../../core/ui/pagina_base.dart';
@@ -24,16 +25,13 @@ class EspaciosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PaginaBase(
       titulo: 'Pistas de pádel',
-      subtitulo: nombreUsuario == null
-          ? 'Encuentra el espacio perfecto para tu próxima partida.'
-          : 'Hola, $nombreUsuario. Acceso simulado.',
+      subtitulo: 'Hola, ${nombreUsuario ?? DatosDemo.usuario.nombre}.',
       acciones: [
-        if (onCerrarSesion != null)
-          IconButton(
-            onPressed: onCerrarSesion,
-            tooltip: 'Cerrar sesión',
-            icon: const Icon(Icons.logout),
-          ),
+        IconButton(
+          onPressed: onCerrarSesion ?? () => cerrarSesion(context),
+          tooltip: 'Cerrar sesión',
+          icon: const Icon(Icons.logout),
+        ),
       ],
       child:
           contenido ??
@@ -45,20 +43,22 @@ class EspaciosScreen extends StatelessWidget {
                 runSpacing: AppEspaciado.sm,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (context) => const MisReservasScreen(),
-                      ),
-                    ),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacement<void, void>(
+                          MaterialPageRoute<void>(
+                            builder: (context) => const MisReservasScreen(),
+                          ),
+                        ),
                     icon: const Icon(Icons.event_note_outlined),
                     label: const Text('Mis reservas'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (context) => const PerfilScreen(),
-                      ),
-                    ),
+                    onPressed: () => Navigator.of(context)
+                        .pushReplacement<void, void>(
+                          MaterialPageRoute<void>(
+                            builder: (context) => const PerfilScreen(),
+                          ),
+                        ),
                     icon: const Icon(Icons.person_outline),
                     label: const Text('Perfil'),
                   ),

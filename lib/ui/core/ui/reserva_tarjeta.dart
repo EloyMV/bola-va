@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colores.dart';
 import '../theme/app_espaciado.dart';
+import '../theme/app_preferencias.dart';
 import 'espacio_tarjeta.dart';
 
 /// Estados visuales; los datos y las reglas de las reservas se añaden aparte.
@@ -44,20 +45,34 @@ class ReservaTarjeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final esOscuro = tema.brightness == Brightness.dark;
+    final apoyoDaltonismo = AppPreferencias.apoyoDaltonismo.value;
     final (etiqueta, colorEstado, iconoEstado) = switch (estado) {
       EstadoReserva.confirmada => (
         'Confirmada',
-        AppColores.exito,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.disponibleDaltonismoOscuro
+                  : AppColores.disponibleDaltonismo)
+            : (esOscuro ? AppColores.exitoOscuro : AppColores.exito),
         Icons.check_circle_outline,
       ),
       EstadoReserva.pendiente => (
         'Pendiente',
-        AppColores.aviso,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.pendienteDaltonismoOscuro
+                  : AppColores.pendienteDaltonismo)
+            : (esOscuro ? AppColores.avisoOscuro : AppColores.aviso),
         Icons.schedule,
       ),
       EstadoReserva.cancelada => (
         'Cancelada',
-        AppColores.error,
+        apoyoDaltonismo
+            ? (esOscuro
+                  ? AppColores.canceladaDaltonismoOscuro
+                  : AppColores.canceladaDaltonismo)
+            : tema.colorScheme.error,
         Icons.cancel_outlined,
       ),
     };

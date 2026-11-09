@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/espacio.dart';
 import '../../../domain/models/servicio_extra.dart';
 import '../../core/theme/app_espaciado.dart';
+import '../../core/theme/app_preferencias.dart';
 import '../../core/ui/estado_vacio.dart';
 import '../../core/ui/pagina_base.dart';
 import 'mis_reservas_screen.dart';
@@ -41,13 +42,16 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
 
   final Set<String> _extrasSeleccionados = {};
   late DateTime _fechaSeleccionada;
-  String _horaInicioSeleccionada = '18:00';
+  late String _horario;
+  late String _horaInicioSeleccionada;
   late int _numeroAsistentes;
 
   @override
   void initState() {
     super.initState();
     _fechaSeleccionada = _fechasDisponibles.first;
+    _horario = AppPreferencias.horarioFavorito.value;
+    _horaInicioSeleccionada = _horaParaHorario(_horario);
     final capacidad = widget.espacio?.capacidad ?? _nombresAsistentes.length;
     _numeroAsistentes = capacidad < _nombresAsistentes.length
         ? capacidad
@@ -120,6 +124,28 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
           contenido: Column(
             children: [
               _dato(context, 'Actividad', 'Pádel'),
+              DropdownButtonFormField<String>(
+                key: const ValueKey<String>('selector-periodo-reserva'),
+                initialValue: _horario,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  labelText: 'Horario de juego',
+                  prefixIcon: Icon(Icons.schedule_outlined),
+                ),
+                items: [
+                  for (final horario in AppPreferencias.horariosFavoritos)
+                    DropdownMenuItem(value: horario, child: Text(horario)),
+                ],
+                onChanged: (horario) {
+                  if (horario != null) {
+                    setState(() {
+                      _horario = horario;
+                      _horaInicioSeleccionada = _horaParaHorario(horario);
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: AppEspaciado.sm),
               Padding(
                 padding: const EdgeInsets.only(bottom: AppEspaciado.sm),
                 child: DropdownButtonFormField<DateTime>(
@@ -170,7 +196,10 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
                             selected: _horaInicioSeleccionada == hora,
                             onSelected: (seleccionado) {
                               if (seleccionado) {
-                                setState(() => _horaInicioSeleccionada = hora);
+                                setState(() {
+                                  _horaInicioSeleccionada = hora;
+                                  _horario = _periodoParaHora(hora);
+                                });
                               }
                             },
                           ),
@@ -224,6 +253,40 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
+        ValueListenableBuilder<bool>(
+          valueListenable: AppPreferencias.avisosReservas,
+          builder: (context, avisos, child) {
+            if (!avisos) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppEspaciado.md),
+              child: Card(
+                key: const Key('aviso-reserva'),
+                color: tema.colorScheme.secondaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppEspaciado.md),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: tema.colorScheme.onSecondaryContainer,
+                      ),
+                      const SizedBox(width: AppEspaciado.sm),
+                      Expanded(
+                        child: Text(
+                          'Comprueba el horario y las condiciones antes de reservar.',
+                          style: tema.textTheme.bodyMedium?.copyWith(
+                            color: tema.colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
         _tarjeta(
           context,
           titulo: 'Incluido en el espacio',
@@ -417,6 +480,20 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
     final hora = (minutosTotales ~/ 60).toString().padLeft(2, '0');
     final minutos = (minutosTotales % 60).toString().padLeft(2, '0');
     return '$hora:$minutos';
+  }
+
+  String _horaParaHorario(String horario) => switch (horario) {
+    'Mañana' => '10:00',
+    'Tarde' => '16:00',
+    'Noche' => '18:00',
+    _ => '18:00',
+  };
+
+  String _periodoParaHora(String hora) {
+    final horaNumerica = int.parse(hora.split(':').first);
+    if (horaNumerica < 12) return 'Mañana';
+    if (horaNumerica < 18) return 'Tarde';
+    return 'Noche';
   }
 
   static String _formatearFecha(DateTime fecha) {
