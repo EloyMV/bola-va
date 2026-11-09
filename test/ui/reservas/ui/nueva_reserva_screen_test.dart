@@ -26,7 +26,7 @@ void main() {
     expect(find.text('Pádel'), findsOneWidget);
     expect(find.text('Viernes, 13 de noviembre de 2026'), findsOneWidget);
     expect(find.text('Hora de inicio'), findsOneWidget);
-    expect(find.text('18:00'), findsOneWidget);
+    expect(find.text('18:00'), findsNWidgets(2));
     expect(find.text('Hora de fin'), findsOneWidget);
     expect(find.text('20:00'), findsOneWidget);
     expect(find.textContaining('Asistentes (4/4)'), findsOneWidget);
@@ -56,6 +56,55 @@ void main() {
     await tester.tap(raquetas);
     await tester.pumpAndSettle();
     expect(find.text('51,00 €'), findsOneWidget);
+  });
+
+  testWidgets('Permite elegir fecha, turno y número de personas', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTema.claro,
+        home: NuevaReservaScreen(espacio: DatosDemo.espacios.first),
+      ),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('selector-fecha-reserva')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('14 nov 2026').last);
+    await tester.pumpAndSettle();
+
+    final turno = find.byKey(const ValueKey('horario-16:00'));
+    await tester.ensureVisible(turno);
+    await tester.tap(turno);
+    await tester.pumpAndSettle();
+
+    final selectorPersonas = find.byKey(
+      const ValueKey('selector-personas-reserva'),
+    );
+    await tester.ensureVisible(selectorPersonas);
+    await tester.tap(selectorPersonas);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2 personas').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Asistentes (2/4)'), findsOneWidget);
+
+    final confirmar = find.text('Confirmar reserva');
+    await tester.ensureVisible(confirmar);
+    await tester.tap(confirmar);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ConfirmacionReservaScreen), findsOneWidget);
+    expect(find.text('Sábado, 14 de noviembre de 2026'), findsOneWidget);
+    expect(find.text('16:00'), findsOneWidget);
+    expect(find.text('18:00'), findsOneWidget);
+    expect(find.textContaining('Asistentes (2/4)'), findsOneWidget);
+    expect(find.text('Alex García, Lucía Martínez'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(
