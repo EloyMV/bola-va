@@ -4,6 +4,7 @@ import '../../../data/services/datos_demo.dart';
 import '../../../domain/models/comentario.dart';
 import '../../../domain/models/disponibilidad_dia.dart';
 import '../../../domain/models/espacio.dart';
+import '../../../domain/models/servicio_extra.dart';
 import '../../../domain/models/franja_disponibilidad.dart';
 import '../../core/theme/app_bordes.dart';
 import '../../core/theme/app_colores.dart';
@@ -135,11 +136,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
                 indice++
               ) ...[
                 if (indice > 0) const SizedBox(height: AppEspaciado.sm),
-                _filaServicio(
-                  context,
-                  espacio.servicios[indice].nombre,
-                  espacio.servicios[indice].icono,
-                ),
+                _filaServicio(context, espacio.servicios[indice]),
               ],
               if (espacio.servicios.isEmpty)
                 Text(
@@ -358,7 +355,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
     );
   }
 
-  Widget _filaServicio(BuildContext context, String nombre, String claveIcono) {
+  Widget _filaServicio(BuildContext context, ServicioExtra servicio) {
     final tema = Theme.of(context);
     return Row(
       children: [
@@ -370,12 +367,25 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
             borderRadius: BorderRadius.circular(AppBordes.medio),
           ),
           child: Icon(
-            _iconoServicio(claveIcono),
+            _iconoServicio(servicio.icono),
             color: tema.colorScheme.primary,
           ),
         ),
         const SizedBox(width: AppEspaciado.md),
-        Expanded(child: Text(nombre, style: tema.textTheme.bodyLarge)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(servicio.nombre, style: tema.textTheme.bodyLarge),
+              Text(
+                servicio.precio == null
+                    ? 'Incluido'
+                    : '${_formatearPrecio(servicio.precio!)} € por reserva',
+                style: tema.textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -386,6 +396,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
     if (clave == 'parking') return Icons.local_parking;
     if (clave == 'descanso') return Icons.weekend_outlined;
     if (clave == 'raqueta') return Icons.sports_tennis;
+    if (clave == 'pelotas') return Icons.sports_baseball_outlined;
     if (clave == 'vestuario') return Icons.meeting_room_outlined;
     if (clave == 'cubierta') return Icons.home_work_outlined;
     if (clave == 'monitor') return Icons.school_outlined;
