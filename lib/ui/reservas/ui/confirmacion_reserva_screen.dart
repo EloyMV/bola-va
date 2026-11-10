@@ -101,7 +101,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
             (_) => false,
           ),
           icon: const Icon(Icons.event_note_outlined),
-          label: const Text('Mis reservas'),
+          label: const Text('Ver mis reservas'),
         ),
       ],
     ),

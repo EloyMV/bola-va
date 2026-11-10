@@ -212,7 +212,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Permite navegar desde reservas a Espacios y Perfil', (
+  testWidgets('Permite navegar desde reservas a Inicio y Perfil', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -222,7 +222,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Espacios'));
+    await tester.tap(find.text('Inicio'));
     await tester.pumpAndSettle();
     expect(find.byType(EspaciosScreen), findsOneWidget);
     expect(find.text('Pistas de pádel'), findsOneWidget);

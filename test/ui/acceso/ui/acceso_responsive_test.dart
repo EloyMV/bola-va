@@ -40,8 +40,8 @@ void main() {
       expect(find.byType(BackButton), findsNothing);
       await pulsar(tester, 'Entrar');
       expect(find.byType(EspaciosScreen), findsOneWidget);
-      await tester.tap(find.byTooltip('Cerrar sesión'));
-      await tester.pumpAndSettle();
+      await pulsar(tester, 'Perfil');
+      await pulsar(tester, 'Cerrar sesión');
       expect(find.byType(LoginScreen), findsOneWidget);
       expect(find.byType(BackButton), findsNothing);
       expect(tester.takeException(), isNull);

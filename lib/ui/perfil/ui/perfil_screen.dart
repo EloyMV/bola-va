@@ -23,11 +23,10 @@ class PerfilScreen extends StatelessWidget {
     return PaginaBase(
       titulo: 'Perfil y ajustes',
       subtitulo: 'Tu cuenta, tus preferencias y la próxima partida.',
+      seccionActual: SeccionPrincipal.perfil,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const NavegacionPrincipal(seccionActual: SeccionPrincipal.perfil),
-          const SizedBox(height: AppEspaciado.lg),
           contenido ??
               LayoutBuilder(
                 builder: (context, constraints) {

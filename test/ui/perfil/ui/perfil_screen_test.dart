@@ -56,7 +56,10 @@ void main() {
         MaterialPageRoute<void>(builder: (_) => const EspaciosScreen()),
       );
       await tester.pumpAndSettle();
-      await pulsar(tester, 'Perfil');
+      navigatorKey.currentState!.push<void>(
+        MaterialPageRoute<void>(builder: (_) => const PerfilScreen()),
+      );
+      await tester.pumpAndSettle();
       expect(navigatorKey.currentState!.canPop(), isTrue);
       await pulsar(tester, 'Cerrar sesión');
 
@@ -94,15 +97,15 @@ void main() {
 
       for (final destino in [
         'Mis reservas',
-        'Espacios',
+        'Inicio',
         'Perfil',
-        'Espacios',
+        'Inicio',
         'Mis reservas',
         'Perfil',
       ]) {
         await pulsar(tester, destino);
         Finder pantalla;
-        if (destino == 'Espacios') {
+        if (destino == 'Inicio') {
           pantalla = find.byType(EspaciosScreen);
         } else if (destino == 'Mis reservas') {
           pantalla = find.byType(MisReservasScreen);

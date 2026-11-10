@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_espaciado.dart';
+import 'navegacion_principal.dart';
 
 /// Marco común para que todas las pantallas compartan márgenes y anchura.
 class PaginaBase extends StatelessWidget {
@@ -13,6 +14,7 @@ class PaginaBase extends StatelessWidget {
     this.centrarContenido = false,
     this.acciones,
     this.fondo,
+    this.seccionActual,
   });
 
   final String titulo;
@@ -22,16 +24,26 @@ class PaginaBase extends StatelessWidget {
   final bool centrarContenido;
   final List<Widget>? acciones;
   final Widget? fondo;
+  final SeccionPrincipal? seccionActual;
 
   @override
   Widget build(BuildContext context) {
     final pagina = Scaffold(
       backgroundColor: fondo == null ? null : Colors.transparent,
       appBar: AppBar(
+        automaticallyImplyLeading: seccionActual == null,
+        toolbarHeight:
+            (MediaQuery.textScalerOf(context).scale(18) + AppEspaciado.lg)
+                .clamp(kToolbarHeight, 112),
         backgroundColor: fondo == null ? null : Colors.transparent,
         title: Text(titulo, maxLines: 1, overflow: TextOverflow.ellipsis),
-        actions: acciones,
+        actions: [
+          ...?acciones,
+          AccesoPerfil(seccionActual: seccionActual),
+          const SizedBox(width: AppEspaciado.xs),
+        ],
       ),
+      bottomNavigationBar: NavegacionPrincipal(seccionActual: seccionActual),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

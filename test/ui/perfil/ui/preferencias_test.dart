@@ -41,12 +41,15 @@ Future<void> abrirPerfil(WidgetTester tester) async {
 }
 
 Future<void> prepararReserva(WidgetTester tester) async {
-  await pulsar(tester, 'Espacios');
+  await pulsar(tester, 'Inicio');
   final pista = find.byKey(const ValueKey<String>('espacio-card-central'));
   await tester.ensureVisible(pista);
   await tester.tap(pista);
   await tester.pumpAndSettle();
-  await pulsar(tester, 'Reservar');
+  final reservar = find.widgetWithText(FilledButton, 'Reservar').first;
+  await tester.ensureVisible(reservar);
+  await tester.tap(reservar);
+  await tester.pumpAndSettle();
   expect(find.byType(NuevaReservaScreen), findsOneWidget);
 }
 
@@ -74,13 +77,13 @@ void main() {
       Brightness.dark,
     );
 
-    await pulsar(tester, 'Espacios');
+    await pulsar(tester, 'Inicio');
     expect(
       Theme.of(tester.element(find.byType(EspaciosScreen))).brightness,
       Brightness.dark,
     );
-    await tester.tap(find.byTooltip('Cerrar sesión'));
-    await tester.pumpAndSettle();
+    await pulsar(tester, 'Perfil');
+    await pulsar(tester, 'Cerrar sesión');
     expect(find.byType(LoginScreen), findsOneWidget);
     expect(
       Theme.of(tester.element(find.byType(TextFormField).first)).brightness,

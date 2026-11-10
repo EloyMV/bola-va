@@ -20,13 +20,12 @@ class MisReservasScreen extends StatelessWidget {
   Widget build(BuildContext context) => PaginaBase(
     titulo: 'Mis reservas',
     subtitulo: 'Tu próxima partida, con todos los detalles a mano.',
+    seccionActual: SeccionPrincipal.reservas,
     child:
         contenido ??
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const NavegacionPrincipal(seccionActual: SeccionPrincipal.reservas),
-            const SizedBox(height: AppEspaciado.md),
             ValueListenableBuilder<List<Reserva>>(
               valueListenable: ReservasRepository.reservas,
               builder: (context, reservas, child) {

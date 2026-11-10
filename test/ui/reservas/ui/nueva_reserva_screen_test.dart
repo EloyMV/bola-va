@@ -67,7 +67,7 @@ void main() {
       expect(creada.total, 55);
       expect(creada.inicio, DateTime(2026, 11, 13, 12));
 
-      await pulsar(tester, find.text('Mis reservas'));
+      await pulsar(tester, find.text('Ver mis reservas'));
       expect(find.byType(MisReservasScreen), findsOneWidget);
       expect(find.byKey(ValueKey('reserva-${creada.id}')), findsOneWidget);
       expect(find.text('Precio total: 55,00 €'), findsOneWidget);

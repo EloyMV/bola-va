@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/services/datos_demo.dart';
-import '../../acceso/ui/cerrar_sesion.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/espacio_tarjeta.dart';
 import '../../core/ui/pagina_base.dart';
@@ -9,38 +8,22 @@ import '../../core/ui/navegacion_principal.dart';
 import 'espacio_detalle_screen.dart';
 
 class EspaciosScreen extends StatelessWidget {
-  const EspaciosScreen({
-    super.key,
-    this.contenido,
-    this.nombreUsuario,
-    this.onCerrarSesion,
-  });
+  const EspaciosScreen({super.key, this.contenido, this.nombreUsuario});
 
   final Widget? contenido;
   final String? nombreUsuario;
-  final VoidCallback? onCerrarSesion;
 
   @override
   Widget build(BuildContext context) {
     return PaginaBase(
       titulo: 'Pistas de pádel',
       subtitulo: 'Hola, ${nombreUsuario ?? DatosDemo.usuario.nombre}.',
-      acciones: [
-        IconButton(
-          onPressed: onCerrarSesion ?? () => cerrarSesion(context),
-          tooltip: 'Cerrar sesión',
-          icon: const Icon(Icons.logout),
-        ),
-      ],
+      seccionActual: SeccionPrincipal.espacios,
       child:
           contenido ??
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const NavegacionPrincipal(
-                seccionActual: SeccionPrincipal.espacios,
-              ),
-              const SizedBox(height: AppEspaciado.lg),
               Text(
                 '${DatosDemo.espacios.length} espacios disponibles',
                 style: Theme.of(context).textTheme.titleLarge,

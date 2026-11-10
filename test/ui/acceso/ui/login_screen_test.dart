@@ -75,8 +75,9 @@ void main() {
   ) async {
     await tester.pumpWidget(const MyApp());
     await pulsar(tester, 'Entrar');
-    await tester.tap(find.byTooltip('Cerrar sesión'));
-    await tester.pumpAndSettle();
+    expect(find.byTooltip('Cerrar sesión'), findsNothing);
+    await pulsar(tester, 'Perfil');
+    await pulsar(tester, 'Cerrar sesión');
 
     expect(find.byType(LoginScreen), findsOneWidget);
     expect(find.byType(EspaciosScreen), findsNothing);

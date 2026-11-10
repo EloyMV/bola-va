@@ -144,12 +144,12 @@ Registrarse abre el registro con `Navigator.push` y
 `MaterialPageRoute`. La flecha superior permite regresar al login conservando
 lo escrito.
 
-Entrar abre la pantalla principal actual. Su botón superior Cerrar sesión
-(icono de salida) vuelve a un login nuevo. Ambos cambios utilizan
+Entrar abre el catálogo de pistas. Cerrar sesión está dentro de Perfil y
+vuelve a un login nuevo. Ambos cambios utilizan
 `pushAndRemoveUntil` con una condición que siempre devuelve `false`: se retiran
 todas las pantallas anteriores, para que Atrás no vuelva al acceso tras entrar
 ni a la sesión después de cerrarla. El nombre y correo de la cuenta se obtienen
-de `DatosDemo.usuario`. Espacios y Perfil comparten la función `cerrarSesion`,
+de `DatosDemo.usuario`. Perfil utiliza la función `cerrarSesion`,
 definida en `lib/ui/acceso/ui/cerrar_sesion.dart`.
 
 Referencias del curso: [TextFormField](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/controles-de-entrada/texto-y-edicion/),
@@ -224,10 +224,16 @@ se conserva el contenido que no necesita reconstruirse. Es la misma idea de
 los `ValueListenableBuilder` anteriores, aplicada a varias señales de cambio.
 Referencia: [ListenableBuilder](https://api.flutter.dev/flutter/widgets/ListenableBuilder-class.html).
 
-Espacios, Mis reservas y Perfil utilizan los mismos botones y
-`Navigator.pushReplacement`: al elegir otra sección se sustituye la actual,
-sin acumular copias. Los detalles de una pista siguen abriéndose con `push`
-para poder regresar al catálogo. Cerrar sesión utiliza `pushAndRemoveUntil`
+Las pantallas de la sesión comparten una cabecera fija con acceso a Perfil y
+una barra inferior fija con Inicio (catálogo) y Mis reservas. `PaginaBase`
+coloca `NavegacionPrincipal` en `Scaffold.bottomNavigationBar`, fuera del
+desplazamiento, reservando su espacio para que no tape el contenido. Los
+botones usan el tema claro u oscuro, identifican la sección seleccionada y
+admiten texto ampliado. Referencia: [bottomNavigationBar de Scaffold](https://api.flutter.dev/flutter/material/Scaffold/bottomNavigationBar.html).
+
+Al elegir una sección se utiliza `pushAndRemoveUntil` para no conservar
+detalles o formularios anteriores. Los detalles y el formulario siguen
+abriéndose con `push` para poder regresar mediante Atrás. Cerrar sesión utiliza `pushAndRemoveUntil`
 con una condición siempre falsa; elimina todas las rutas anteriores, incluso
 si existía alguna debajo del perfil. Atrás deja de poder abrir esa sesión.
 
@@ -250,8 +256,8 @@ y [operaciones de Navigator](https://jovisal1.github.io/ApuntesPMDM/formularis-i
 | `lib/ui/<sección>/ui/` | Pantallas y componentes específicos de cada sección. |
 | `test/ui/<sección>/ui/` | Comprobaciones de los recorridos de cada sección. |
 
-`NavegacionPrincipal` evita repetir los accesos entre Espacios, Mis reservas y
-Perfil. `SeccionContenido`, `DatoEtiqueta` y `LineaPrecio` unifican tarjetas,
+`NavegacionPrincipal` y `AccesoPerfil` evitan repetir los accesos entre el
+catálogo, Mis reservas y Perfil. `SeccionContenido`, `DatoEtiqueta` y `LineaPrecio` unifican tarjetas,
 filas y totales. La confirmación vive en `confirmacion_reserva_screen.dart`;
 la galería y las opiniones, en componentes propios de Espacios.
 
@@ -273,6 +279,10 @@ La segunda pulsación de Confirmar no duplica la reserva. Precios, capacidad y
 extras se obtienen del catálogo, y cancelar libera el turno que ocupaba la reserva.
 Las opiniones se mantienen por pista durante la misma ejecución y no modifican
 el catálogo inicial. Al reiniciar la app se recuperan los datos precargados.
+
+El detalle muestra los próximos tres días de disponibilidad y dos botones
+Reservar con la misma acción: uno debajo de las fotos y otro al final del
+contenido. El formulario conserva la semana completa para elegir otro día.
 
 ## Evitar trabajo repetido
 

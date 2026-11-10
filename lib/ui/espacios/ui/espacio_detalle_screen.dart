@@ -51,6 +51,8 @@ class EspacioDetalleScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         GaleriaEspacio(espacio: espacio),
+        const SizedBox(height: AppEspaciado.md),
+        _botonReservar(context, espacio),
         const SizedBox(height: AppEspaciado.lg),
         SeccionContenido(
           titulo: 'Descripción',
@@ -207,18 +209,21 @@ class EspacioDetalleScreen extends StatelessWidget {
           child: OpinionesEspacio(espacio: espacio),
         ),
         const SizedBox(height: AppEspaciado.lg),
-        FilledButton.icon(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (context) => NuevaReservaScreen(espacio: espacio),
-            ),
-          ),
-          icon: const Icon(Icons.event_available_outlined),
-          label: const Text('Reservar'),
-        ),
+        _botonReservar(context, espacio),
       ],
     );
   }
+
+  Widget _botonReservar(BuildContext context, Espacio espacio) =>
+      FilledButton.icon(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => NuevaReservaScreen(espacio: espacio),
+          ),
+        ),
+        icon: const Icon(Icons.event_available_outlined),
+        label: const Text('Reservar'),
+      );
 
   Widget _dato(
     BuildContext context, {
@@ -302,14 +307,14 @@ class EspacioDetalleScreen extends StatelessWidget {
             const SizedBox(width: AppEspaciado.xs),
             Expanded(
               child: Text(
-                'Horarios de esta semana',
+                'Horarios de los próximos 3 días',
                 style: tema.textTheme.labelLarge?.copyWith(color: colorAviso),
               ),
             ),
           ],
         ),
         const SizedBox(height: AppEspaciado.md),
-        for (var indice = 0; indice < dias.length; indice++) ...[
+        for (var indice = 0; indice < dias.length && indice < 3; indice++) ...[
           if (indice > 0) const Divider(),
           _filaDisponibilidad(context, dias[indice], esHoy: indice == 0),
         ],
