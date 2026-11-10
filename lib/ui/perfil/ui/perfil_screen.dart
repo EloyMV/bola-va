@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/services/datos_demo.dart';
+import '../../../data/repositories/reservas_repository.dart';
+import '../../../domain/models/reserva.dart';
 import '../../acceso/ui/cerrar_sesion.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/pagina_base.dart';
-import '../../espacios/ui/espacios_screen.dart';
-import '../../reservas/ui/mis_reservas_screen.dart';
+import '../../core/ui/navegacion_principal.dart';
+import '../../core/ui/seccion_contenido.dart';
+import 'accesibilidad_perfil.dart';
 import 'preferencias_perfil.dart';
-import 'seccion_perfil.dart';
 import 'tarjeta_usuario.dart';
 
 /// Información del usuario y ajustes compartidos de la aplicación.
@@ -24,32 +26,7 @@ class PerfilScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Wrap(
-            spacing: AppEspaciado.sm,
-            runSpacing: AppEspaciado.sm,
-            children: [
-              OutlinedButton.icon(
-                onPressed: () => Navigator.of(context)
-                    .pushReplacement<void, void>(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const EspaciosScreen(),
-                      ),
-                    ),
-                icon: const Icon(Icons.sports_tennis_outlined),
-                label: const Text('Espacios'),
-              ),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.of(context)
-                    .pushReplacement<void, void>(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const MisReservasScreen(),
-                      ),
-                    ),
-                icon: const Icon(Icons.event_note_outlined),
-                label: const Text('Mis reservas'),
-              ),
-            ],
-          ),
+          const NavegacionPrincipal(seccionActual: SeccionPrincipal.perfil),
           const SizedBox(height: AppEspaciado.lg),
           contenido ??
               LayoutBuilder(
@@ -108,7 +85,7 @@ class PerfilScreen extends StatelessWidget {
   }
 
   Widget _actividad(BuildContext context) {
-    return SeccionPerfil(
+    return SeccionContenido(
       titulo: 'La pista te espera',
       icono: Icons.sports_tennis_outlined,
       child: Column(
@@ -119,7 +96,17 @@ class PerfilScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: AppEspaciado.xs),
-          const Text('Todavía no tienes reservas.'),
+          ValueListenableBuilder<List<Reserva>>(
+            valueListenable: ReservasRepository.reservas,
+            builder: (context, reservas, child) {
+              final cantidad = ReservasRepository.proximas().length;
+              return Text(
+                cantidad == 0
+                    ? 'Todavía no tienes reservas.'
+                    : 'Tienes $cantidad ${cantidad == 1 ? 'reserva próxima' : 'reservas próximas'}.',
+              );
+            },
+          ),
           const SizedBox(height: AppEspaciado.sm),
           const Text('Consulta los espacios y prepara tu próxima partida.'),
         ],
@@ -128,7 +115,7 @@ class PerfilScreen extends StatelessWidget {
   }
 
   Widget _informacionAplicacion(BuildContext context) {
-    return SeccionPerfil(
+    return SeccionContenido(
       titulo: 'Sobre Bola Va',
       icono: Icons.info_outline,
       child: Column(

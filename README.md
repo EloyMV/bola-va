@@ -17,7 +17,7 @@ automáticamente.
 | `app_espaciado.dart` | Separaciones, márgenes y anchos máximos. |
 | `app_bordes.dart` | Radios de esquinas. |
 | `app_tema.dart` | Tipografía y apariencia de los componentes Material. |
-| `app_preferencias.dart` | Apariencia, avisos y horario favorito durante la ejecución. |
+| `app_preferencias.dart` | Apariencia, accesibilidad, avisos y horario favorito durante la ejecución. |
 
 Login y registro utilizan `AppTema.acceso` o `AppTema.accesoOscuro`, según la
 apariencia elegida. En claro combinan fondo marfil, texto verde tinta y campos
@@ -73,10 +73,11 @@ Para mantener el diseño común:
 ## Pantallas preparadas
 
 El login y el registro incluyen sus campos y acciones simuladas. El catálogo
-muestra las pistas de demostración y el perfil incluye sus datos y preferencias.
-Las pantallas pendientes conservan su base visual con título, descripción y estado vacío.
-Cada una acepta un widget `contenido` para añadir su formulario, lista o detalle
-sin reconstruir el diseño exterior. El formulario de acceso ocupa hasta 460
+muestra las pistas de demostración con detalle, galería, disponibilidad y opiniones.
+El formulario de reserva, su confirmación y Mis reservas comparten el estado en
+memoria; Perfil muestra la misma cuenta y permite cambiar las preferencias.
+Las pantallas principales conservan un parámetro opcional `contenido` para probar
+una composición alternativa sin reconstruir el diseño exterior. El formulario de acceso ocupa hasta 460
 píxeles lógicos en escritorio; la composición compacta llega a 480 y el contenido
 general de otras pantallas, a 1100 píxeles
 lógicos. La base adapta los márgenes al ancho disponible y permite desplazarse
@@ -182,14 +183,14 @@ con el login y el registro: «Álex García», `alex.garcia@bolava.es` e inicial
 fija está en `DatosDemo`. Escribir otros datos en el acceso o registro no modifica
 ese usuario ni crea una cuenta.
 
-`TarjetaUsuario` muestra la identidad con `CircleAvatar`. `SeccionPerfil` agrupa
+`TarjetaUsuario` muestra la identidad con `CircleAvatar`. `SeccionContenido` agrupa
 las preferencias y la información del proyecto con el tema común. `PreferenciasPerfil`
 permite elegir Claro, Oscuro o Sistema, activar recomendaciones al preparar una
 reserva y seleccionar Mañana, Tarde o Noche como horario favorito. La versión mostrada es `1.0.0`,
 compilación `1`, igual que `pubspec.yaml`; si cambia la versión del proyecto,
 hay que actualizar también ese texto fijo.
 
-`AppPreferencias` comparte estos tres valores con `ValueNotifier`. Al asignar
+`AppPreferencias` comparte los ajustes con `ValueNotifier`. Al asignar
 un nuevo `.value`, avisa a los `ValueListenableBuilder` que lo están escuchando
 para que actualicen la interfaz. Es una ampliación de los ejemplos básicos del
 curso necesaria para comunicar los ajustes entre pantallas, sin añadir paquetes.
@@ -207,6 +208,22 @@ Los ajustes se conservan al navegar y cerrar sesión mientras la aplicación
 sigue abierta. Al reiniciarla vuelven a Claro, avisos desactivados y Tarde.
 No se añade persistencia ni se envían notificaciones fuera de la app.
 
+La sección `AccesibilidadPerfil`, en su propio archivo, permite ajustar el texto
+entre el 80 % y el 160 %. Esa escala se combina con la del dispositivo, también
+si el sistema aplica un escalado no lineal. El apoyo para daltonismo rojo-verde
+usa azul, naranja y morado para los estados, acompañados siempre por texto e
+iconos. `ColoresEstado` concentra esa selección para que catálogo, horarios y
+reservas utilicen el mismo criterio. El botón de restablecer solo modifica los
+ajustes de accesibilidad de la app.
+
+Reducir efectos evita las animaciones decorativas de entrada, indicadores de la
+galería y cambio de tema. `ConfiguracionAccesible`, dentro de `core/ui/`, respeta
+también la petición de reducir movimiento del sistema. `ListenableBuilder`
+permite escuchar varios ajustes sin anidar un constructor por cada uno;
+se conserva el contenido que no necesita reconstruirse. Es la misma idea de
+los `ValueListenableBuilder` anteriores, aplicada a varias señales de cambio.
+Referencia: [ListenableBuilder](https://api.flutter.dev/flutter/widgets/ListenableBuilder-class.html).
+
 Espacios, Mis reservas y Perfil utilizan los mismos botones y
 `Navigator.pushReplacement`: al elegir otra sección se sustituye la actual,
 sin acumular copias. Los detalles de una pista siguen abriéndose con `push`
@@ -219,6 +236,56 @@ grande, usando `LayoutBuilder` y `MediaQuery`, dentro del desplazamiento de
 `PaginaBase`. Referencias consultadas del curso:
 [Card, ListTile y CircleAvatar](https://jovisal1.github.io/ApuntesPMDM/widgets/otros/tarjetas-y-elementos-material/)
 y [operaciones de Navigator](https://jovisal1.github.io/ApuntesPMDM/formularis-i-navegacio/navegacion/entre-pantallas/).
+
+## Organización y componentes compartidos
+
+| Carpeta | Responsabilidad |
+| --- | --- |
+| `lib/domain/models/` | Modelos y reglas de datos: pistas, personas, reservas, precios y estados. |
+| `lib/data/services/` | Catálogo y datos iniciales definidos en el código. |
+| `lib/data/repositories/` | Reservas, disponibilidad y opiniones compartidas durante la ejecución. |
+| `lib/ui/core/theme/` | Temas, paleta, colores de estado y ajustes de apariencia. |
+| `lib/ui/core/formatters/` | Formato común de fechas, horas e importes. |
+| `lib/ui/core/ui/` | Navegación, tarjetas, imágenes y filas reutilizables. |
+| `lib/ui/<sección>/ui/` | Pantallas y componentes específicos de cada sección. |
+| `test/ui/<sección>/ui/` | Comprobaciones de los recorridos de cada sección. |
+
+`NavegacionPrincipal` evita repetir los accesos entre Espacios, Mis reservas y
+Perfil. `SeccionContenido`, `DatoEtiqueta` y `LineaPrecio` unifican tarjetas,
+filas y totales. La confirmación vive en `confirmacion_reserva_screen.dart`;
+la galería y las opiniones, en componentes propios de Espacios.
+
+Los DTO y repositorios todavía vacíos conservan los huecos de la estructura
+inicial para futuras entregas; no se necesitan para añadir una base de datos
+en esta fase. No hay dependencias nuevas.
+
+## Reservas y disponibilidad en memoria
+
+`Reserva` y `EstadoReserva` pertenecen al dominio. `ReservasRepository` inicia
+el listado con los datos de `DatosDemo` y comparte sus cambios mediante un
+`ValueNotifier`. Confirmar crea una reserva que aparece en Mis reservas;
+cancelarla se mantiene al cambiar de sección. El perfil muestra ese mismo
+número de reservas próximas.
+
+Detalle y formulario consultan `DisponibilidadRepository`. Los turnos ocupados,
+las fechas pasadas y los solapamientos se comprueban de nuevo al confirmar.
+La segunda pulsación de Confirmar no duplica la reserva. Precios, capacidad y
+extras se obtienen del catálogo, y cancelar libera el turno que ocupaba la reserva.
+Las opiniones se mantienen por pista durante la misma ejecución y no modifican
+el catálogo inicial. Al reiniciar la app se recuperan los datos precargados.
+
+## Evitar trabajo repetido
+
+Los temas se crean una vez y se reutilizan. Cambiar el tamaño del texto actualiza
+la configuración accesible sin volver a crear toda la configuración Material.
+La galería y el formulario de opiniones tienen estados independientes para
+limitar las reconstrucciones a la parte que cambia.
+
+`EspacioImagen` comparte carga, semántica y alternativa sin conexión. Para
+Unsplash solicita un ancho ajustado al tamaño visible y a la densidad de píxeles,
+agrupando anchos para evitar descargas por variaciones mínimas de ventana.
+En plataformas compatibles también limita el tamaño de decodificación con
+`cacheWidth`. No se han añadido paquetes de caché ni almacenamiento persistente.
 
 ## Trabajar entre dos personas
 
@@ -238,7 +305,8 @@ flutter test
 
 ## Preparar una publicación
 
-La app actual es una demo: no guarda reservas ni datos de usuario. La PWA guarda
+La app mantiene reservas, opiniones y ajustes en memoria durante su ejecución.
+No conserva esos cambios después de reiniciar. La PWA guarda
 en caché los recursos estáticos para poder arrancar sin conexión, pero esa caché
 no es una copia de datos ni sincroniza dispositivos.
 

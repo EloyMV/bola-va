@@ -20,7 +20,7 @@ abstract final class AppColores {
   static const Color sobrePrimario = Color(0xFFFFFFFF);
   static const Color disponibleDaltonismo = Color(0xFF1565C0);
   static const Color disponibleDaltonismoOscuro = Color(0xFF90CAF9);
-  static const Color pendienteDaltonismo = Color(0xFFEF6C00);
+  static const Color pendienteDaltonismo = Color(0xFFA64B00);
   static const Color pendienteDaltonismoOscuro = Color(0xFFFFB74D);
   static const Color canceladaDaltonismo = Color(0xFF6A1B9A);
   static const Color canceladaDaltonismoOscuro = Color(0xFFCE93D8);

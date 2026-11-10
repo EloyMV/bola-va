@@ -8,10 +8,25 @@ import 'app_espaciado.dart';
 /// Los widgets Material heredan este tema sin repetir estilos en cada pantalla.
 abstract final class AppTema {
   /// Variante clara de acceso: superficies tranquilas y acciones en verde tinta.
-  static ThemeData get acceso => _crearAcceso(claro);
+  static final ThemeData acceso = _crearAcceso(claro);
 
   /// Mantiene los mismos formularios cuando se elige la apariencia oscura.
-  static ThemeData get accesoOscuro => _crearAcceso(oscuro);
+  static final ThemeData accesoOscuro = _crearAcceso(oscuro);
+
+  static final ThemeData claro = _crearClaro();
+  static final ThemeData oscuro = _crearOscuro();
+
+  // El cambio de tema también actualiza los widgets que consultan sus estados.
+  static final ThemeData claroAccesible = claro.copyWith(
+    colorScheme: claro.colorScheme.copyWith(
+      tertiary: AppColores.disponibleDaltonismo,
+    ),
+  );
+  static final ThemeData oscuroAccesible = oscuro.copyWith(
+    colorScheme: oscuro.colorScheme.copyWith(
+      tertiary: AppColores.disponibleDaltonismoOscuro,
+    ),
+  );
 
   static ThemeData _crearAcceso(ThemeData base) {
     final esOscuro = base.brightness == Brightness.dark;
@@ -220,7 +235,7 @@ abstract final class AppTema {
   }
 
   /// La misma identidad del club con superficies oscuras y texto de alto contraste.
-  static ThemeData get oscuro {
+  static ThemeData _crearOscuro() {
     final base = claro;
     const fondo = Color(0xFF101A16);
     const superficie = Color(0xFF192720);
@@ -424,7 +439,7 @@ abstract final class AppTema {
     );
   }
 
-  static ThemeData get claro {
+  static ThemeData _crearClaro() {
     const esquema = ColorScheme.light(
       primary: AppColores.primario,
       onPrimary: AppColores.sobrePrimario,

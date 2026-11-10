@@ -15,6 +15,7 @@ void restaurarPreferencias() {
   AppPreferencias.horarioFavorito.value = 'Tarde';
   AppPreferencias.escalaTexto.value = 1;
   AppPreferencias.apoyoDaltonismo.value = false;
+  AppPreferencias.reducirEfectos.value = false;
 }
 
 Future<void> pulsar(WidgetTester tester, String texto) async {

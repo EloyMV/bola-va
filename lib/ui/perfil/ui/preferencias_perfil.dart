@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_espaciado.dart';
 import '../../core/theme/app_preferencias.dart';
-import 'seccion_perfil.dart';
+import '../../core/ui/seccion_contenido.dart';
 
 class PreferenciasPerfil extends StatelessWidget {
   const PreferenciasPerfil({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SeccionPerfil(
+    return SeccionContenido(
       titulo: 'Preferencias',
       icono: Icons.tune_outlined,
       child: Column(
@@ -85,73 +85,6 @@ class PreferenciasPerfil extends StatelessWidget {
                     }
                   },
                 ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AccesibilidadPerfil extends StatelessWidget {
-  const AccesibilidadPerfil({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SeccionPerfil(
-      titulo: 'Accesibilidad',
-      icono: Icons.accessibility_new,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ValueListenableBuilder<double>(
-            valueListenable: AppPreferencias.escalaTexto,
-            builder: (context, escala, child) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Tamaño del texto: ${(escala * 100).round()} %',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: AppEspaciado.xs),
-                Row(
-                  children: [
-                    const Icon(Icons.text_decrease),
-                    Expanded(
-                      child: Slider(
-                        value: escala,
-                        min: 0.8,
-                        max: 1.6,
-                        divisions: 8,
-                        label: '${(escala * 100).round()} %',
-                        semanticFormatterCallback: (valor) =>
-                            '${(valor * 100).round()} por ciento',
-                        onChanged: (valor) {
-                          AppPreferencias.escalaTexto.value = valor;
-                        },
-                      ),
-                    ),
-                    const Icon(Icons.text_increase),
-                  ],
-                ),
-                const Text('Ajusta el tamaño del texto en toda la aplicación.'),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppEspaciado.md),
-          ValueListenableBuilder<bool>(
-            valueListenable: AppPreferencias.apoyoDaltonismo,
-            builder: (context, apoyoActivo, child) => SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Apoyo para daltonismo rojo-verde'),
-              subtitle: const Text(
-                'Usa azul, naranja y morado para distinguir los estados, '
-                'además de sus iconos y etiquetas.',
-              ),
-              value: apoyoActivo,
-              onChanged: (valor) {
-                AppPreferencias.apoyoDaltonismo.value = valor;
-              },
-            ),
           ),
         ],
       ),
