@@ -2,8 +2,8 @@
   "app": "Bola Va",
   "scope": "/bola-va/app/",
   "packagerVersion": 1,
-  "cacheName": "bola-va-static-9c00b51f24626fc65b4f",
-  "contentHash": "9c00b51f24626fc65b4fd7ac25939363d8d41465a6629bb15ffcff7a5db5ad90",
+  "cacheName": "bola-va-static-16d9422b225fc49a7eae",
+  "contentHash": "16d9422b225fc49a7eae1ade97465c597cb6851f550b4c34d81a9f361b43693e",
   "files": [
     {
       "path": "assets/AssetManifest.bin",
@@ -22,8 +22,8 @@
     },
     {
       "path": "assets/assets/fonts/Roboto-LICENSE.txt",
-      "size": 11358,
-      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      "size": 11560,
+      "sha256": "3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"
     },
     {
       "path": "assets/assets/fonts/Roboto-Medium.ttf",
@@ -47,8 +47,8 @@
     },
     {
       "path": "assets/fonts/MaterialIcons-Regular.otf",
-      "size": 8776,
-      "sha256": "d9c2b6c989ceb9160b378e55b95c54dd2adda4a2ea0e43c429b98278e7d4f6c8"
+      "size": 15316,
+      "sha256": "f3ba270031ca234714ec0a930d30d8921dfd54d72a91c122e03a36a9bf5b2df5"
     },
     {
       "path": "assets/NOTICES",
@@ -207,8 +207,8 @@
     },
     {
       "path": "main.dart.js",
-      "size": 2493860,
-      "sha256": "7488be00deb09a786e0bca49da414471eb3410c837da3c4d15da98bd441a6eda"
+      "size": 2827137,
+      "sha256": "97d05ca02d0bbb3bce9871701bdfb41a64fff21d225e9774cd878e2e4f52fd2f"
     },
     {
       "path": "manifest.json",
@@ -217,13 +217,13 @@
     },
     {
       "path": "pwa.js",
-      "size": 1038,
-      "sha256": "f2f246a70bf6c898ec6563de4a8b33f28f0ab8780808867c2255e06ea0d35303"
+      "size": 1431,
+      "sha256": "45bfab966537dc2f0f248c27e30ba9fda055c42c7e52c6425391dfaaebe0938f"
     },
     {
       "path": "version.json",
       "size": 86,
-      "sha256": "f3490f7cc7d08a161ecc25b5633b636c11caab467339b45889c1765a6548e7c3"
+      "sha256": "f45507fe06f71b72b20502cc77fde6de205affc095b216160324640d7211d63a"
     }
   ]
 }

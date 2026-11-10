@@ -1,7 +1,7 @@
 {
   "appName": "Bola Va",
-  "version": "1.0.0",
-  "buildNumber": 1,
+  "version": "1.1.0",
+  "buildNumber": 2,
   "applicationId": "es.bolava.app",
   "minAndroid": "7.0",
   "architectures": [
@@ -11,11 +11,11 @@
   ],
   "certificateSha256": "e621773dd23ee29c437cb26f10f15e31be9cf305809accf32731518f71f68375",
   "apk": {
-    "fileName": "bola-va-release-1.0.0.apk",
-    "path": "apk/bola-va-release-1.0.0.apk",
+    "fileName": "bola-va-release-1.1.0.apk",
+    "path": "apk/bola-va-release-1.1.0.apk",
     "contentType": "application/vnd.android.package-archive",
-    "sizeBytes": 51883779,
-    "sha256": "996392a0c9a4eb071b6a3be3d2311646873cf94a42c7a4675c0f0621dff45d4b"
+    "sizeBytes": 53621759,
+    "sha256": "120146654d88bbbb26aa7b8455691a419432f93a603de5cc1225ac044cae5e57"
   },
-  "generatedAt": "2026-11-06T17:56:43.988Z"
+  "generatedAt": "2026-11-10T15:42:36.319Z"
 }
