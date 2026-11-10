@@ -5,8 +5,7 @@ import '../../acceso/ui/cerrar_sesion.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/ui/espacio_tarjeta.dart';
 import '../../core/ui/pagina_base.dart';
-import '../../perfil/ui/perfil_screen.dart';
-import '../../reservas/ui/mis_reservas_screen.dart';
+import '../../core/ui/navegacion_principal.dart';
 import 'espacio_detalle_screen.dart';
 
 class EspaciosScreen extends StatelessWidget {
@@ -38,31 +37,8 @@ class EspaciosScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Wrap(
-                spacing: AppEspaciado.sm,
-                runSpacing: AppEspaciado.sm,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context)
-                        .pushReplacement<void, void>(
-                          MaterialPageRoute<void>(
-                            builder: (context) => const MisReservasScreen(),
-                          ),
-                        ),
-                    icon: const Icon(Icons.event_note_outlined),
-                    label: const Text('Mis reservas'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context)
-                        .pushReplacement<void, void>(
-                          MaterialPageRoute<void>(
-                            builder: (context) => const PerfilScreen(),
-                          ),
-                        ),
-                    icon: const Icon(Icons.person_outline),
-                    label: const Text('Perfil'),
-                  ),
-                ],
+              const NavegacionPrincipal(
+                seccionActual: SeccionPrincipal.espacios,
               ),
               const SizedBox(height: AppEspaciado.lg),
               Text(

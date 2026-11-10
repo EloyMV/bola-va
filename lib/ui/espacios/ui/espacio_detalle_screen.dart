@@ -1,69 +1,40 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/services/datos_demo.dart';
-import '../../../domain/models/comentario.dart';
+import '../../../data/repositories/disponibilidad_repository.dart';
+import '../../../data/repositories/reservas_repository.dart';
 import '../../../domain/models/disponibilidad_dia.dart';
 import '../../../domain/models/espacio.dart';
-import '../../../domain/models/servicio_extra.dart';
 import '../../../domain/models/franja_disponibilidad.dart';
+import '../../../domain/models/reserva.dart';
+import '../../../domain/models/servicio_extra.dart';
+import '../../core/formatters/formatos.dart';
 import '../../core/theme/app_bordes.dart';
-import '../../core/theme/app_colores.dart';
 import '../../core/theme/app_espaciado.dart';
-import '../../core/theme/app_preferencias.dart';
-import '../../core/ui/espacio_tarjeta.dart';
+import '../../core/theme/colores_estado.dart';
+import '../../core/ui/dato_etiqueta.dart';
 import '../../core/ui/estado_vacio.dart';
 import '../../core/ui/pagina_base.dart';
+import '../../core/ui/seccion_contenido.dart';
 import '../../reservas/ui/nueva_reserva_screen.dart';
+import 'galeria_espacio.dart';
+import 'opiniones_espacio.dart';
 
-class EspacioDetalleScreen extends StatefulWidget {
+class EspacioDetalleScreen extends StatelessWidget {
   const EspacioDetalleScreen({super.key, this.espacio, this.contenido});
 
   final Espacio? espacio;
   final Widget? contenido;
 
   @override
-  State<EspacioDetalleScreen> createState() => _EspacioDetalleScreenState();
-}
-
-class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
-  late List<Comentario> _opiniones;
-  final TextEditingController _controladorOpinion = TextEditingController();
-  int _indiceImagenActual = 0;
-  int _puntuacionSeleccionada = 5;
-
-  @override
-  void initState() {
-    super.initState();
-    _opiniones = List<Comentario>.of(widget.espacio?.opiniones ?? const []);
-  }
-
-  @override
-  void didUpdateWidget(covariant EspacioDetalleScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.espacio?.id != widget.espacio?.id) {
-      _opiniones = List<Comentario>.of(widget.espacio?.opiniones ?? const []);
-      _indiceImagenActual = 0;
-      _puntuacionSeleccionada = 5;
-      _controladorOpinion.clear();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controladorOpinion.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final espacio = widget.espacio;
+    final espacio = this.espacio;
     return PaginaBase(
       titulo: espacio?.nombre ?? 'Detalle del espacio',
       subtitulo: espacio == null
           ? 'Conoce el lugar de tu próxima partida.'
           : 'Información, servicios y disponibilidad del espacio.',
       child:
-          widget.contenido ??
+          contenido ??
           (espacio == null
               ? const EstadoVacio(
                   icono: Icons.info_outline,
@@ -79,13 +50,12 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _carrusel(context, espacio),
+        GaleriaEspacio(espacio: espacio),
         const SizedBox(height: AppEspaciado.lg),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Descripción',
           icono: Icons.sports_tennis_outlined,
-          contenido: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -124,11 +94,10 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Equipamiento y servicios',
           icono: Icons.sports_outlined,
-          contenido: Column(
+          child: Column(
             children: [
               for (
                 var indice = 0;
@@ -147,18 +116,17 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Tarifa y contacto',
           icono: Icons.payments_outlined,
-          contenido: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _dato(
                 context,
                 icono: Icons.euro_symbol,
                 etiqueta: 'Tarifa por hora',
-                valor: '${_formatearPrecio(espacio.tarifaHora)} €/hora',
+                valor: '${formatearPrecio(espacio.tarifaHora)} €/hora',
               ),
               const SizedBox(height: AppEspaciado.md),
               if (contacto != null) ...[
@@ -196,11 +164,10 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Condiciones y horario',
           icono: Icons.schedule_outlined,
-          contenido: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _dato(
@@ -224,18 +191,20 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Disponibilidad',
           icono: Icons.calendar_month_outlined,
-          contenido: _contenidoDisponibilidad(context, espacio),
+          child: ValueListenableBuilder<List<Reserva>>(
+            valueListenable: ReservasRepository.reservas,
+            builder: (context, reservas, child) =>
+                _contenidoDisponibilidad(context, espacio),
+          ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _seccion(
-          context,
+        SeccionContenido(
           titulo: 'Opiniones',
           icono: Icons.star_outline,
-          contenido: _contenidoOpiniones(context),
+          child: OpinionesEspacio(espacio: espacio),
         ),
         const SizedBox(height: AppEspaciado.lg),
         FilledButton.icon(
@@ -248,85 +217,6 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
           label: const Text('Reservar'),
         ),
       ],
-    );
-  }
-
-  Widget _carrusel(BuildContext context, Espacio espacio) {
-    final tema = Theme.of(context);
-    final imagenes = espacio.galeriaImagenes;
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppBordes.grande),
-          child: SizedBox(
-            height: 240,
-            child: PageView.builder(
-              key: ValueKey<String>('galeria-${espacio.id}'),
-              itemCount: imagenes.length,
-              onPageChanged: (indice) => setState(() {
-                _indiceImagenActual = indice;
-              }),
-              itemBuilder: (context, indice) => EspacioImagen(
-                imagenUrl: imagenes[indice],
-                etiqueta: '${espacio.nombre}, imagen ${indice + 1}',
-                altura: 240,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: AppEspaciado.sm),
-        Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: AppEspaciado.xs,
-          children: [
-            for (var indice = 0; indice < imagenes.length; indice++)
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                width: indice == _indiceImagenActual ? 18 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: indice == _indiceImagenActual
-                      ? tema.colorScheme.primary
-                      : tema.colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(AppBordes.redondo),
-                ),
-              ),
-            Text(
-              'Foto ${_indiceImagenActual + 1} de ${imagenes.length}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _seccion(
-    BuildContext context, {
-    required String titulo,
-    required IconData icono,
-    required Widget contenido,
-  }) {
-    final tema = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppEspaciado.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icono, color: tema.colorScheme.primary),
-                const SizedBox(width: AppEspaciado.xs),
-                Expanded(child: Text(titulo, style: tema.textTheme.titleLarge)),
-              ],
-            ),
-            const SizedBox(height: AppEspaciado.md),
-            contenido,
-          ],
-        ),
-      ),
     );
   }
 
@@ -343,13 +233,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
         Icon(icono, size: 20, color: tema.colorScheme.primary),
         const SizedBox(width: AppEspaciado.sm),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(etiqueta, style: tema.textTheme.labelLarge),
-              Text(valor, style: tema.textTheme.bodyMedium),
-            ],
-          ),
+          child: DatoEtiqueta(etiqueta: etiqueta, valor: valor),
         ),
       ],
     );
@@ -380,7 +264,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
               Text(
                 servicio.precio == null
                     ? 'Incluido'
-                    : '${_formatearPrecio(servicio.precio!)} € por reserva',
+                    : '${formatearPrecio(servicio.precio!)} € por reserva',
                 style: tema.textTheme.bodySmall,
               ),
             ],
@@ -407,14 +291,8 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
 
   Widget _contenidoDisponibilidad(BuildContext context, Espacio espacio) {
     final tema = Theme.of(context);
-    final colorAviso = AppPreferencias.apoyoDaltonismo.value
-        ? (tema.brightness == Brightness.dark
-              ? AppColores.disponibleDaltonismoOscuro
-              : AppColores.disponibleDaltonismo)
-        : (tema.brightness == Brightness.dark
-              ? AppColores.avisoOscuro
-              : AppColores.aviso);
-    final dias = DatosDemo.disponibilidadSemana(espacio.id);
+    final colorAviso = ColoresEstado.pendiente(context);
+    final dias = DisponibilidadRepository.disponibilidadSemana(espacio.id);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -451,7 +329,7 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _formatearDia(dia.fecha, esHoy: esHoy),
+            '${esHoy ? 'Hoy · ' : ''}${formatearFecha(dia.fecha)}',
             style: tema.textTheme.titleMedium,
           ),
           const SizedBox(height: AppEspaciado.xs),
@@ -469,14 +347,9 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
 
   Widget _chipFranja(BuildContext context, FranjaDisponibilidad franja) {
     final tema = Theme.of(context);
-    final esOscuro = tema.brightness == Brightness.dark;
     final color = franja.libre
-        ? (AppPreferencias.apoyoDaltonismo.value
-              ? (esOscuro
-                    ? AppColores.disponibleDaltonismoOscuro
-                    : AppColores.disponibleDaltonismo)
-              : (esOscuro ? AppColores.exitoOscuro : AppColores.exito))
-        : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
+        ? ColoresEstado.disponible(context)
+        : ColoresEstado.ocupado(context);
     return Chip(
       avatar: Icon(
         franja.libre ? Icons.check_circle_outline : Icons.block_outlined,
@@ -491,223 +364,4 @@ class _EspacioDetalleScreenState extends State<EspacioDetalleScreen> {
       side: BorderSide(color: color),
     );
   }
-
-  Widget _contenidoOpiniones(BuildContext context) {
-    final tema = Theme.of(context);
-    final colorEstrellas = tema.brightness == Brightness.dark
-        ? AppColores.avisoOscuro
-        : AppColores.aviso;
-    final media = _opiniones.isEmpty
-        ? 0.0
-        : _opiniones.fold<int>(
-                0,
-                (suma, opinion) => suma + opinion.puntuacion,
-              ) /
-              _opiniones.length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (_opiniones.isEmpty)
-          Text('Sin valoraciones', style: tema.textTheme.bodyLarge)
-        else ...[
-          Row(
-            children: [
-              Icon(Icons.star, color: colorEstrellas),
-              const SizedBox(width: AppEspaciado.xs),
-              Text(media.toStringAsFixed(1), style: tema.textTheme.titleLarge),
-              const SizedBox(width: AppEspaciado.xs),
-              Expanded(
-                child: Text(
-                  '· ${_opiniones.length} ${_opiniones.length == 1 ? 'valoración' : 'valoraciones'}',
-                  style: tema.textTheme.bodyMedium,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppEspaciado.md),
-          for (var indice = 0; indice < _opiniones.length; indice++) ...[
-            if (indice > 0) const Divider(),
-            _opinionItem(context, _opiniones[indice]),
-          ],
-        ],
-        const SizedBox(height: AppEspaciado.md),
-        const Divider(),
-        const SizedBox(height: AppEspaciado.sm),
-        Text('Añadir una opinión', style: tema.textTheme.titleMedium),
-        const SizedBox(height: AppEspaciado.xs),
-        TextField(
-          controller: _controladorOpinion,
-          maxLines: 3,
-          textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(
-            labelText: 'Tu comentario',
-            hintText: 'Cuéntanos cómo fue tu partida',
-            alignLabelWithHint: true,
-          ),
-        ),
-        const SizedBox(height: AppEspaciado.sm),
-        Text(
-          'Puntuación: $_puntuacionSeleccionada de 5',
-          style: tema.textTheme.bodyMedium,
-        ),
-        Row(
-          children: [
-            for (var puntuacion = 1; puntuacion <= 5; puntuacion++)
-              IconButton(
-                tooltip: '$puntuacion estrellas',
-                onPressed: () => setState(() {
-                  _puntuacionSeleccionada = puntuacion;
-                }),
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-                icon: Icon(
-                  puntuacion <= _puntuacionSeleccionada
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: puntuacion <= _puntuacionSeleccionada
-                      ? colorEstrellas
-                      : tema.colorScheme.onSurfaceVariant,
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: AppEspaciado.sm),
-        FilledButton.icon(
-          onPressed: () => _agregarOpinion(context),
-          icon: const Icon(Icons.rate_review_outlined),
-          label: const Text('Publicar opinión'),
-        ),
-      ],
-    );
-  }
-
-  Widget _opinionItem(BuildContext context, Comentario opinion) {
-    final tema = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppEspaciado.xs),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(opinion.autor, style: tema.textTheme.titleMedium),
-              ),
-              Text(opinion.fecha, style: tema.textTheme.bodySmall),
-            ],
-          ),
-          const SizedBox(height: AppEspaciado.xxs),
-          Row(
-            children: [
-              _estrellas(context, opinion.puntuacion),
-              const SizedBox(width: AppEspaciado.xs),
-              Text('${opinion.puntuacion}/5', style: tema.textTheme.bodySmall),
-            ],
-          ),
-          const SizedBox(height: AppEspaciado.xs),
-          Text(opinion.texto, style: tema.textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-
-  Widget _estrellas(BuildContext context, int puntuacion) {
-    final tema = Theme.of(context);
-    final colorEstrellas = tema.brightness == Brightness.dark
-        ? AppColores.avisoOscuro
-        : AppColores.aviso;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var indice = 1; indice <= 5; indice++)
-          Icon(
-            indice <= puntuacion ? Icons.star : Icons.star_border,
-            size: 18,
-            color: indice <= puntuacion
-                ? colorEstrellas
-                : tema.colorScheme.onSurfaceVariant,
-          ),
-      ],
-    );
-  }
-
-  void _agregarOpinion(BuildContext context) {
-    final texto = _controladorOpinion.text.trim();
-    if (texto.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Escribe un comentario antes de publicarlo.'),
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _opiniones.insert(
-        0,
-        Comentario(
-          autor: DatosDemo.usuario.nombre,
-          fecha: _fechaActual(),
-          texto: texto,
-          puntuacion: _puntuacionSeleccionada,
-        ),
-      );
-      _controladorOpinion.clear();
-      _puntuacionSeleccionada = 5;
-    });
-  }
-
-  String _formatearDia(DateTime fecha, {required bool esHoy}) {
-    const dias = [
-      'lunes',
-      'martes',
-      'miércoles',
-      'jueves',
-      'viernes',
-      'sábado',
-      'domingo',
-    ];
-    const meses = [
-      'enero',
-      'febrero',
-      'marzo',
-      'abril',
-      'mayo',
-      'junio',
-      'julio',
-      'agosto',
-      'septiembre',
-      'octubre',
-      'noviembre',
-      'diciembre',
-    ];
-    final fechaTexto =
-        '${dias[fecha.weekday - 1]} ${fecha.day} de ${meses[fecha.month - 1]}';
-    return esHoy ? 'Hoy · $fechaTexto' : fechaTexto;
-  }
-
-  String _fechaActual() {
-    const meses = [
-      'ene',
-      'feb',
-      'mar',
-      'abr',
-      'may',
-      'jun',
-      'jul',
-      'ago',
-      'sep',
-      'oct',
-      'nov',
-      'dic',
-    ];
-    final fecha = DateTime.now();
-    return '${fecha.day} ${meses[fecha.month - 1]} ${fecha.year}';
-  }
-
-  String _formatearPrecio(double precio) => precio == precio.roundToDouble()
-      ? precio.toStringAsFixed(0)
-      : precio.toStringAsFixed(2);
 }

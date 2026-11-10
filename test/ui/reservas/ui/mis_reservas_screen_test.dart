@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:proyecto/data/repositories/reservas_repository.dart';
+import 'package:proyecto/domain/models/reserva.dart';
 import 'package:proyecto/ui/core/theme/app_tema.dart';
 import 'package:proyecto/ui/core/ui/espacio_tarjeta.dart';
 import 'package:proyecto/ui/espacios/ui/espacios_screen.dart';
@@ -8,6 +10,8 @@ import 'package:proyecto/ui/reservas/ui/mis_reservas_screen.dart';
 
 void main() {
   final fechaDemo = DateTime(2026, 11, 9, 23, 59);
+  setUp(ReservasRepository.restablecer);
+  tearDown(ReservasRepository.restablecer);
 
   testWidgets('Muestra tarjetas compactas con imagen y datos principales', (
     tester,
@@ -92,9 +96,9 @@ void main() {
     expect(find.text('Alquiler de raquetas · 5,00 €'), findsOneWidget);
     expect(find.text('Cesta de bolas · 3,00 €'), findsOneWidget);
     expect(find.text('Precio total: 50,00 €'), findsNWidgets(2));
-    expect(find.text('Responsable: Pau Ferrer'), findsOneWidget);
-    expect(find.text('Teléfono: 600 222 333'), findsOneWidget);
-    expect(find.text('Correo: pau@bolava.example'), findsOneWidget);
+    expect(find.text('Pau Ferrer'), findsOneWidget);
+    expect(find.text('600 222 333'), findsOneWidget);
+    expect(find.text('pau@bolava.example'), findsOneWidget);
 
     await tester.tap(find.text('Cerrar'));
     await tester.pumpAndSettle();
@@ -109,7 +113,7 @@ void main() {
     expect(find.text('Sin extras'), findsOneWidget);
     expect(find.text('Actividad: Pádel'), findsOneWidget);
     expect(find.text('Asistentes: 2'), findsOneWidget);
-    expect(find.text('Responsable: Núria Vidal'), findsOneWidget);
+    expect(find.text('Núria Vidal'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -168,9 +172,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(
-      find.textContaining(
-        'no se guardará ni modificará ningún dato persistente.',
-      ),
+      find.text('¿Quieres cancelar tu reserva en Pista Panorámica?'),
       findsOneWidget,
     );
     await tester.tap(find.text('Volver'));
@@ -229,6 +231,36 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(PerfilScreen), findsOneWidget);
     expect(find.text('Perfil y ajustes'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Una cancelación se conserva al cambiar de sección y regresar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTema.claro,
+        home: MisReservasScreen(fechaActual: fechaDemo),
+      ),
+    );
+    final panoramica = find.byKey(const ValueKey('reserva-panoramica'));
+    await tester.tap(
+      find.descendant(of: panoramica, matching: find.text('Cancelar')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sí, cancelar'));
+    await tester.pumpAndSettle();
+    expect(panoramica, findsNothing);
+    await tester.tap(find.text('Perfil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mis reservas'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MisReservasScreen), findsOneWidget);
+    expect(panoramica, findsNothing);
+    expect(
+      ReservasRepository.reservas.value.first.estado,
+      EstadoReserva.cancelada,
+    );
     expect(tester.takeException(), isNull);
   });
 }

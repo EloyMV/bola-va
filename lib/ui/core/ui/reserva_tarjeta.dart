@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colores.dart';
+import '../../../domain/models/reserva.dart';
 import '../theme/app_espaciado.dart';
-import '../theme/app_preferencias.dart';
+import '../theme/colores_estado.dart';
 import 'espacio_tarjeta.dart';
 
-/// Estados visuales; los datos y las reglas de las reservas se añaden aparte.
-enum EstadoReserva { confirmada, pendiente, cancelada }
+export '../../../domain/models/reserva.dart' show EstadoReserva;
 
 class ReservaTarjeta extends StatelessWidget {
   const ReservaTarjeta({
@@ -16,13 +15,7 @@ class ReservaTarjeta extends StatelessWidget {
     required this.hora,
     this.estado = EstadoReserva.confirmada,
     this.imagenUrl,
-    this.actividad,
-    this.asistentes,
-    this.servicios,
     this.precioTotal,
-    this.responsable,
-    this.telefono,
-    this.correo,
     this.onDetails,
     this.onCancel,
   });
@@ -32,47 +25,27 @@ class ReservaTarjeta extends StatelessWidget {
   final String hora;
   final EstadoReserva estado;
   final String? imagenUrl;
-  final String? actividad;
-  final int? asistentes;
-  final List<String>? servicios;
   final String? precioTotal;
-  final String? responsable;
-  final String? telefono;
-  final String? correo;
   final VoidCallback? onDetails;
   final VoidCallback? onCancel;
 
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
-    final esOscuro = tema.brightness == Brightness.dark;
-    final apoyoDaltonismo = AppPreferencias.apoyoDaltonismo.value;
     final (etiqueta, colorEstado, iconoEstado) = switch (estado) {
       EstadoReserva.confirmada => (
         'Confirmada',
-        apoyoDaltonismo
-            ? (esOscuro
-                  ? AppColores.disponibleDaltonismoOscuro
-                  : AppColores.disponibleDaltonismo)
-            : (esOscuro ? AppColores.exitoOscuro : AppColores.exito),
+        ColoresEstado.disponible(context),
         Icons.check_circle_outline,
       ),
       EstadoReserva.pendiente => (
         'Pendiente',
-        apoyoDaltonismo
-            ? (esOscuro
-                  ? AppColores.pendienteDaltonismoOscuro
-                  : AppColores.pendienteDaltonismo)
-            : (esOscuro ? AppColores.avisoOscuro : AppColores.aviso),
+        ColoresEstado.pendiente(context),
         Icons.schedule,
       ),
       EstadoReserva.cancelada => (
         'Cancelada',
-        apoyoDaltonismo
-            ? (esOscuro
-                  ? AppColores.canceladaDaltonismoOscuro
-                  : AppColores.canceladaDaltonismo)
-            : tema.colorScheme.error,
+        ColoresEstado.cancelada(context),
         Icons.cancel_outlined,
       ),
     };

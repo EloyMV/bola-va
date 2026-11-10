@@ -1,253 +1,281 @@
 import 'package:flutter/material.dart';
 
+import '../../../data/repositories/disponibilidad_repository.dart';
+import '../../../data/repositories/reservas_repository.dart';
+import '../../../data/services/datos_demo.dart';
+import '../../../domain/models/disponibilidad_dia.dart';
 import '../../../domain/models/espacio.dart';
+import '../../../domain/models/franja_disponibilidad.dart';
 import '../../../domain/models/servicio_extra.dart';
+import '../../core/formatters/formatos.dart';
 import '../../core/theme/app_espaciado.dart';
 import '../../core/theme/app_preferencias.dart';
+import '../../core/ui/dato_etiqueta.dart';
 import '../../core/ui/estado_vacio.dart';
+import '../../core/ui/linea_precio.dart';
 import '../../core/ui/pagina_base.dart';
-import 'mis_reservas_screen.dart';
+import '../../core/ui/seccion_contenido.dart';
+import 'confirmacion_reserva_screen.dart';
 
-/// Reserva de demostración con disponibilidad precargada.
+export 'confirmacion_reserva_screen.dart';
+
 class NuevaReservaScreen extends StatefulWidget {
-  const NuevaReservaScreen({super.key, this.espacio, this.contenido});
+  const NuevaReservaScreen({
+    super.key,
+    this.espacio,
+    this.contenido,
+    this.fechaActual,
+  });
 
   final Espacio? espacio;
   final Widget? contenido;
+  final DateTime? fechaActual;
 
   @override
   State<NuevaReservaScreen> createState() => _NuevaReservaScreenState();
 }
 
 class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
-  static final List<DateTime> _fechasDisponibles = [
-    DateTime(2026, 11, 13),
-    DateTime(2026, 11, 14),
-    DateTime(2026, 11, 16),
-  ];
-  static const List<String> _horasDisponibles = [
-    '10:00',
-    '12:00',
-    '14:00',
-    '16:00',
-    '18:00',
-  ];
-  static const List<String> _nombresAsistentes = [
-    'Alex García',
-    'Lucía Martínez',
-    'David Ruiz',
-    'Tú',
-  ];
-  static const double _duracionHoras = 2;
-
   final Set<String> _extrasSeleccionados = {};
+  late final DateTime _referencia;
   late DateTime _fechaSeleccionada;
   late String _horario;
-  late String _horaInicioSeleccionada;
   late int _numeroAsistentes;
+  FranjaDisponibilidad? _turnoSeleccionado;
+  bool _confirmando = false;
 
   @override
   void initState() {
     super.initState();
-    _fechaSeleccionada = _fechasDisponibles.first;
+    _referencia = widget.fechaActual ?? DateTime.now();
+    _fechaSeleccionada = DateTime(
+      _referencia.year,
+      _referencia.month,
+      _referencia.day,
+    );
     _horario = AppPreferencias.horarioFavorito.value;
-    _horaInicioSeleccionada = _horaParaHorario(_horario);
-    final capacidad = widget.espacio?.capacidad ?? _nombresAsistentes.length;
-    _numeroAsistentes = capacidad < _nombresAsistentes.length
-        ? capacidad
-        : _nombresAsistentes.length;
-    if (_numeroAsistentes < 1) {
-      _numeroAsistentes = 1;
+    _numeroAsistentes = (widget.espacio?.capacidad ?? 4).clamp(1, 4);
+    for (final dia in _disponibilidad()) {
+      if (_turnosLibres(dia).isNotEmpty) {
+        _fechaSeleccionada = dia.fecha;
+        break;
+      }
     }
+    _seleccionarTurno();
+  }
+
+  List<DisponibilidadDia> _disponibilidad() =>
+      DisponibilidadRepository.disponibilidadSemana(
+        widget.espacio?.id ?? '',
+        referencia: _referencia,
+      );
+
+  List<FranjaDisponibilidad> _turnosLibres(DisponibilidadDia dia) => [
+    for (final turno in dia.franjas)
+      if (turno.libre &&
+          !_fechaHora(
+            dia.fecha,
+            turno.horaInicio,
+          ).isBefore(widget.fechaActual ?? DateTime.now()))
+        turno,
+  ];
+
+  void _seleccionarTurno() {
+    final dia = _disponibilidad().firstWhere(
+      (dia) => dia.fecha == _fechaSeleccionada,
+    );
+    final turnos = _turnosLibres(dia);
+    final preferidos = turnos.where(
+      (turno) => _periodoParaHora(turno.horaInicio) == _horario,
+    );
+    _turnoSeleccionado = preferidos.isNotEmpty
+        ? preferidos.first
+        : (turnos.isEmpty ? null : turnos.first);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final espacioActual = widget.espacio;
-    return PaginaBase(
-      titulo: 'Nueva reserva',
-      subtitulo: 'Haz sitio para tu próxima partida.',
-      anchoMaximo: AppEspaciado.anchoFormulario,
-      child:
-          widget.contenido ??
-          (espacioActual == null
-              ? const EstadoVacio(
-                  icono: Icons.calendar_month_outlined,
-                  titulo: 'Una nueva partida',
-                  mensaje:
-                      'Aquí aparecerán los detalles de tu próxima reserva.',
-                )
-              : _formulario(context, espacioActual)),
-    );
-  }
+  Widget build(BuildContext context) => PaginaBase(
+    titulo: 'Nueva reserva',
+    subtitulo: 'Haz sitio para tu próxima partida.',
+    anchoMaximo: AppEspaciado.anchoFormulario,
+    child:
+        widget.contenido ??
+        (widget.espacio == null
+            ? const EstadoVacio(
+                icono: Icons.calendar_month_outlined,
+                titulo: 'Elige una pista',
+                mensaje:
+                    'Abre un espacio para consultar sus turnos y reservar.',
+              )
+            : _formulario(context, widget.espacio!)),
+  );
 
   Widget _formulario(BuildContext context, Espacio espacio) {
-    final incluidos = espacio.servicios
-        .where((servicio) => servicio.precio == null)
-        .toList();
+    final tema = Theme.of(context);
+    final dias = _disponibilidad();
+    final dia = dias.firstWhere((dia) => dia.fecha == _fechaSeleccionada);
+    final libres = _turnosLibres(dia);
+    final incluidos = espacio.servicios.where(
+      (servicio) => servicio.precio == null,
+    );
     final extras = espacio.servicios
         .where((servicio) => servicio.precio != null)
         .toList();
-    final horaFin = _calcularHoraFin(_horaInicioSeleccionada);
-    final asistentes = _obtenerAsistentes();
-    final subtotalAlquiler = espacio.tarifaHora * _duracionHoras;
-    final subtotalExtras = _calcularSubtotalExtras(extras);
-    final total = subtotalAlquiler + subtotalExtras;
-    final tema = Theme.of(context);
+    final asistentes = _asistentes();
+    final subtotalAlquiler = espacio.tarifaHora * 2;
+    final subtotalExtras = extras
+        .where((extra) => _extrasSeleccionados.contains(extra.nombre))
+        .fold<double>(0, (suma, extra) => suma + extra.precio!);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _tarjeta(
-          context,
+        SeccionContenido(
           titulo: 'Espacio elegido',
           icono: Icons.sports_tennis_outlined,
-          contenido: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(espacio.nombre, style: tema.textTheme.titleLarge),
               const SizedBox(height: AppEspaciado.xs),
-              Text(espacio.ubicacion, style: tema.textTheme.bodyMedium),
-              const SizedBox(height: AppEspaciado.xs),
-              Text(
-                'Capacidad: ${espacio.capacidad} jugadores',
-                style: tema.textTheme.bodyMedium,
-              ),
+              Text(espacio.ubicacion),
+              Text('Capacidad: ${espacio.capacidad} jugadores'),
             ],
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _tarjeta(
-          context,
+        SeccionContenido(
           titulo: 'Datos de la reserva',
           icono: Icons.event_available_outlined,
-          contenido: Column(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _dato(context, 'Actividad', 'Pádel'),
+              const DatoEtiqueta(etiqueta: 'Actividad', valor: 'Pádel'),
               DropdownButtonFormField<String>(
-                key: const ValueKey<String>('selector-periodo-reserva'),
+                key: ValueKey('selector-periodo-$_horario'),
                 initialValue: _horario,
                 isExpanded: true,
                 decoration: const InputDecoration(
-                  labelText: 'Horario de juego',
-                  prefixIcon: Icon(Icons.schedule_outlined),
+                  labelText: 'Periodo preferido',
                 ),
                 items: [
                   for (final horario in AppPreferencias.horariosFavoritos)
                     DropdownMenuItem(value: horario, child: Text(horario)),
                 ],
                 onChanged: (horario) {
-                  if (horario != null) {
-                    setState(() {
-                      _horario = horario;
-                      _horaInicioSeleccionada = _horaParaHorario(horario);
-                    });
+                  if (horario == null) {
+                    return;
                   }
+                  setState(() {
+                    _horario = horario;
+                    _seleccionarTurno();
+                  });
                 },
               ),
               const SizedBox(height: AppEspaciado.sm),
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppEspaciado.sm),
-                child: DropdownButtonFormField<DateTime>(
-                  key: const ValueKey<String>('selector-fecha-reserva'),
-                  initialValue: _fechaSeleccionada,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Fecha disponible',
-                  ),
-                  items: [
-                    for (final fecha in _fechasDisponibles)
-                      DropdownMenuItem<DateTime>(
-                        value: fecha,
-                        child: Text(_formatearFechaCorta(fecha)),
-                      ),
-                  ],
-                  onChanged: (fecha) {
-                    if (fecha != null) {
-                      setState(() => _fechaSeleccionada = fecha);
-                    }
-                  },
+              DropdownButtonFormField<DateTime>(
+                key: const ValueKey('selector-fecha-reserva'),
+                initialValue: _fechaSeleccionada,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  labelText: 'Fecha disponible',
                 ),
+                items: [
+                  for (final dia in dias)
+                    DropdownMenuItem(
+                      value: dia.fecha,
+                      child: Text(formatearFechaCorta(dia.fecha)),
+                    ),
+                ],
+                onChanged: (fecha) {
+                  if (fecha == null) {
+                    return;
+                  }
+                  setState(() {
+                    _fechaSeleccionada = fecha;
+                    _seleccionarTurno();
+                  });
+                },
               ),
-              _dato(context, 'Fecha', _formatearFecha(_fechaSeleccionada)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppEspaciado.sm),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Hora de inicio · turnos de 2 horas',
-                      style: tema.textTheme.labelLarge,
-                    ),
-                    const SizedBox(height: AppEspaciado.xxs),
-                    Text(
-                      'Turnos disponibles de demostración',
-                      style: tema.textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: AppEspaciado.xs),
-                    Wrap(
-                      spacing: AppEspaciado.xs,
-                      runSpacing: AppEspaciado.xs,
-                      children: [
-                        for (final hora in _horasDisponibles)
-                          ChoiceChip(
-                            key: ValueKey<String>('horario-$hora'),
-                            label: Text(hora),
-                            selected: _horaInicioSeleccionada == hora,
-                            onSelected: (seleccionado) {
-                              if (seleccionado) {
-                                setState(() {
-                                  _horaInicioSeleccionada = hora;
-                                  _horario = _periodoParaHora(hora);
-                                });
+              const SizedBox(height: AppEspaciado.sm),
+              DatoEtiqueta(
+                etiqueta: 'Fecha',
+                valor: formatearFecha(_fechaSeleccionada),
+              ),
+              Text(
+                'Hora de inicio · turnos de 2 horas',
+                style: tema.textTheme.labelLarge,
+              ),
+              const SizedBox(height: AppEspaciado.xs),
+              Wrap(
+                spacing: AppEspaciado.xs,
+                runSpacing: AppEspaciado.xs,
+                children: [
+                  for (final turno in dia.franjas)
+                    ChoiceChip(
+                      key: ValueKey('horario-${turno.horaInicio}'),
+                      label: Text(turno.horaInicio),
+                      tooltip: libres.contains(turno)
+                          ? 'Turno disponible'
+                          : 'Turno no disponible',
+                      selected:
+                          _turnoSeleccionado?.horaInicio == turno.horaInicio,
+                      onSelected: !libres.contains(turno)
+                          ? null
+                          : (elegido) {
+                              if (!elegido) {
+                                return;
                               }
+                              setState(() {
+                                _turnoSeleccionado = turno;
+                                _horario = _periodoParaHora(turno.horaInicio);
+                              });
                             },
-                          ),
-                      ],
                     ),
-                  ],
+                ],
+              ),
+              const SizedBox(height: AppEspaciado.sm),
+              if (_turnoSeleccionado case final turno?) ...[
+                DatoEtiqueta(
+                  etiqueta: 'Hora de inicio',
+                  valor: turno.horaInicio,
                 ),
+                DatoEtiqueta(etiqueta: 'Hora de fin', valor: turno.horaFin),
+              ] else
+                const Text(
+                  'No quedan turnos libres para esta fecha. Elige otro día.',
+                ),
+              const DatoEtiqueta(etiqueta: 'Duración', valor: '2 horas'),
+              DatoEtiqueta(
+                etiqueta:
+                    'Asistentes ($_numeroAsistentes/${espacio.capacidad})',
+                valor: asistentes.join(', '),
               ),
-              _dato(context, 'Hora de inicio', _horaInicioSeleccionada),
-              _dato(context, 'Hora de fin', horaFin),
-              _dato(
-                context,
-                'Duración',
-                '${_formatearPrecio(_duracionHoras)} horas',
-              ),
-              _dato(
-                context,
-                'Asistentes ($_numeroAsistentes/${espacio.capacidad})',
-                asistentes.join(', '),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: AppEspaciado.xs),
-                child: DropdownButtonFormField<int>(
-                  key: const ValueKey<String>('selector-personas-reserva'),
-                  initialValue: _numeroAsistentes,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Número de personas',
-                  ),
-                  items: [
-                    for (
-                      var cantidad = 1;
-                      cantidad <= espacio.capacidad;
-                      cantidad++
-                    )
-                      DropdownMenuItem<int>(
-                        value: cantidad,
-                        child: Text(
-                          '$cantidad ${cantidad == 1 ? 'persona' : 'personas'}',
-                        ),
+              DropdownButtonFormField<int>(
+                key: const ValueKey('selector-personas-reserva'),
+                initialValue: _numeroAsistentes,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  labelText: 'Número de personas',
+                ),
+                items: [
+                  for (
+                    var cantidad = 1;
+                    cantidad <= espacio.capacidad;
+                    cantidad++
+                  )
+                    DropdownMenuItem(
+                      value: cantidad,
+                      child: Text(
+                        '$cantidad ${cantidad == 1 ? 'persona' : 'personas'}',
                       ),
-                  ],
-                  onChanged: (cantidad) {
-                    if (cantidad != null) {
-                      setState(() => _numeroAsistentes = cantidad);
-                    }
-                  },
-                ),
+                    ),
+                ],
+                onChanged: (cantidad) {
+                  if (cantidad != null) {
+                    setState(() => _numeroAsistentes = cantidad);
+                  }
+                },
               ),
             ],
           ),
@@ -255,555 +283,187 @@ class _NuevaReservaScreenState extends State<NuevaReservaScreen> {
         const SizedBox(height: AppEspaciado.md),
         ValueListenableBuilder<bool>(
           valueListenable: AppPreferencias.avisosReservas,
-          builder: (context, avisos, child) {
-            if (!avisos) return const SizedBox.shrink();
-            return Padding(
-              padding: const EdgeInsets.only(bottom: AppEspaciado.md),
-              child: Card(
-                key: const Key('aviso-reserva'),
-                color: tema.colorScheme.secondaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppEspaciado.md),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
+          builder: (context, avisos, child) => !avisos
+              ? const SizedBox.shrink()
+              : Card(
+                  key: const Key('aviso-reserva'),
+                  color: tema.colorScheme.secondaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppEspaciado.md),
+                    child: Text(
+                      'Comprueba el horario y las condiciones antes de reservar.',
+                      style: TextStyle(
                         color: tema.colorScheme.onSecondaryContainer,
                       ),
-                      const SizedBox(width: AppEspaciado.sm),
-                      Expanded(
-                        child: Text(
-                          'Comprueba el horario y las condiciones antes de reservar.',
-                          style: tema.textTheme.bodyMedium?.copyWith(
-                            color: tema.colorScheme.onSecondaryContainer,
-                          ),
-                        ),
+                    ),
+                  ),
+                ),
+        ),
+        SeccionContenido(
+          titulo: 'Incluido en el espacio',
+          icono: Icons.check_circle_outline,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (incluidos.isEmpty)
+                const Text('No se indica equipamiento incluido.'),
+              for (final servicio in incluidos)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppEspaciado.xs),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check,
+                        color: tema.colorScheme.primary,
+                        size: 18,
                       ),
+                      const SizedBox(width: AppEspaciado.xs),
+                      Expanded(child: Text(servicio.nombre)),
                     ],
                   ),
                 ),
-              ),
-            );
-          },
-        ),
-        _tarjeta(
-          context,
-          titulo: 'Incluido en el espacio',
-          icono: Icons.check_circle_outline,
-          contenido: incluidos.isEmpty
-              ? Text(
-                  'Este espacio no indica equipamiento incluido.',
-                  style: tema.textTheme.bodyMedium,
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final servicio in incluidos)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: AppEspaciado.xs),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.check,
-                              size: 18,
-                              color: tema.colorScheme.primary,
-                            ),
-                            const SizedBox(width: AppEspaciado.xs),
-                            Expanded(
-                              child: Text(
-                                servicio.nombre,
-                                style: tema.textTheme.bodyMedium,
-                              ),
-                            ),
-                            Text('Incluido', style: tema.textTheme.labelMedium),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
+            ],
+          ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _tarjeta(
-          context,
+        SeccionContenido(
           titulo: 'Extras de esta pista',
           icono: Icons.add_circle_outline,
-          contenido: extras.isEmpty
-              ? Text(
-                  'Este espacio no tiene extras de pago.',
-                  style: tema.textTheme.bodyMedium,
-                )
-              : Column(
-                  children: [
-                    for (final extra in extras)
-                      MergeSemantics(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: AppEspaciado.xs,
-                          ),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                key: ValueKey<String>(
-                                  'extra-${espacio.id}-${extra.nombre}',
-                                ),
-                                value: _extrasSeleccionados.contains(
-                                  extra.nombre,
-                                ),
-                                onChanged: (seleccionado) {
-                                  setState(() {
-                                    if (seleccionado ?? false) {
-                                      _extrasSeleccionados.add(extra.nombre);
-                                    } else {
-                                      _extrasSeleccionados.remove(extra.nombre);
-                                    }
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: AppEspaciado.xs),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      extra.nombre,
-                                      style: tema.textTheme.bodyLarge,
-                                    ),
-                                    Text(
-                                      '${_formatearPrecio(extra.precio!)} € por reserva',
-                                      style: tema.textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
+          child: Column(
+            children: [
+              if (extras.isEmpty)
+                const Text('Este espacio no tiene extras de pago.'),
+              for (final extra in extras)
+                CheckboxListTile(
+                  key: ValueKey('extra-${espacio.id}-${extra.nombre}'),
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(extra.nombre),
+                  subtitle: Text(
+                    '${formatearPrecio(extra.precio!)} € por reserva',
+                  ),
+                  value: _extrasSeleccionados.contains(extra.nombre),
+                  onChanged: (elegido) => setState(() {
+                    if (elegido ?? false) {
+                      _extrasSeleccionados.add(extra.nombre);
+                    } else {
+                      _extrasSeleccionados.remove(extra.nombre);
+                    }
+                  }),
                 ),
+            ],
+          ),
         ),
         const SizedBox(height: AppEspaciado.md),
-        _tarjeta(
-          context,
+        SeccionContenido(
           titulo: 'Desglose del precio',
           icono: Icons.receipt_long_outlined,
-          contenido: Column(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _lineaPrecio(
-                context,
-                'Duración',
-                '${_formatearPrecio(_duracionHoras)} horas',
+              const DatoEtiqueta(etiqueta: 'Duración', valor: '2 horas'),
+              DatoEtiqueta(
+                etiqueta: 'Tarifa por hora',
+                valor: '${formatearPrecio(espacio.tarifaHora)} €/hora',
               ),
-              _lineaPrecio(
-                context,
-                'Tarifa por hora',
-                '${_formatearPrecio(espacio.tarifaHora)} €/hora',
+              LineaPrecio(
+                etiqueta: 'Subtotal alquiler',
+                importe: subtotalAlquiler,
               ),
-              _lineaPrecio(
-                context,
-                'Subtotal alquiler',
-                '${_formatearPrecio(subtotalAlquiler)} €',
-              ),
-              _lineaPrecio(
-                context,
-                'Subtotal extras',
-                '${_formatearPrecio(subtotalExtras)} €',
-              ),
+              LineaPrecio(etiqueta: 'Subtotal extras', importe: subtotalExtras),
               const Divider(height: AppEspaciado.lg),
-              _lineaPrecio(
-                context,
-                'Total por reserva',
-                '${_formatearPrecio(total)} €',
-                destacado: true,
+              LineaPrecio(
+                etiqueta: 'Total por reserva',
+                importe: subtotalAlquiler + subtotalExtras,
+                total: true,
               ),
               const SizedBox(height: AppEspaciado.xs),
-              Text(
-                'Tarifa × duración + extras. Los extras se cobran una vez '
-                'por reserva.',
-                style: tema.textTheme.bodySmall,
+              const Text(
+                'Tarifa × duración + extras. Los extras se cobran una vez por reserva.',
               ),
             ],
           ),
         ),
         const SizedBox(height: AppEspaciado.md),
         FilledButton.icon(
-          onPressed: () => _mostrarConfirmacion(
-            context,
-            espacio: espacio,
-            extras: extras
-                .where((extra) => _extrasSeleccionados.contains(extra.nombre))
-                .toList(),
-            subtotalAlquiler: subtotalAlquiler,
-            subtotalExtras: subtotalExtras,
-            total: total,
-            fecha: _formatearFecha(_fechaSeleccionada),
-            horaInicio: _horaInicioSeleccionada,
-            horaFin: horaFin,
-            asistentes: asistentes,
-          ),
+          onPressed: _confirmando || _turnoSeleccionado == null
+              ? null
+              : () => _confirmar(espacio, extras),
           icon: const Icon(Icons.event_available_outlined),
           label: const Text('Confirmar reserva'),
-        ),
-        const SizedBox(height: AppEspaciado.xs),
-        Text(
-          'Es una reserva de prueba: no se guarda. Mis reservas contiene '
-          'solo ejemplos precargados.',
-          textAlign: TextAlign.center,
-          style: tema.textTheme.bodySmall,
         ),
       ],
     );
   }
 
-  double _calcularSubtotalExtras(List<ServicioExtra> extras) {
-    return extras
-        .where((extra) => _extrasSeleccionados.contains(extra.nombre))
-        .fold(0, (total, extra) => total + extra.precio!);
-  }
-
-  List<String> _obtenerAsistentes() {
-    return List<String>.generate(_numeroAsistentes, (indice) {
-      if (indice < _nombresAsistentes.length) {
-        return _nombresAsistentes[indice];
-      }
-      return 'Jugador ${indice + 1}';
-    });
-  }
-
-  String _calcularHoraFin(String horaInicio) {
-    final partes = horaInicio.split(':');
-    final minutosTotales =
-        int.parse(partes[0]) * 60 +
-        int.parse(partes[1]) +
-        (_duracionHoras * 60).round();
-    final hora = (minutosTotales ~/ 60).toString().padLeft(2, '0');
-    final minutos = (minutosTotales % 60).toString().padLeft(2, '0');
-    return '$hora:$minutos';
-  }
-
-  String _horaParaHorario(String horario) => switch (horario) {
-    'Mañana' => '10:00',
-    'Tarde' => '16:00',
-    'Noche' => '18:00',
-    _ => '18:00',
-  };
-
-  String _periodoParaHora(String hora) {
-    final horaNumerica = int.parse(hora.split(':').first);
-    if (horaNumerica < 12) return 'Mañana';
-    if (horaNumerica < 18) return 'Tarde';
-    return 'Noche';
-  }
-
-  static String _formatearFecha(DateTime fecha) {
-    const dias = [
-      'lunes',
-      'martes',
-      'miércoles',
-      'jueves',
-      'viernes',
-      'sábado',
-      'domingo',
-    ];
-    const meses = [
-      'enero',
-      'febrero',
-      'marzo',
-      'abril',
-      'mayo',
-      'junio',
-      'julio',
-      'agosto',
-      'septiembre',
-      'octubre',
-      'noviembre',
-      'diciembre',
-    ];
-    final dia = dias[fecha.weekday - 1];
-    final mes = meses[fecha.month - 1];
-    return '${dia[0].toUpperCase()}${dia.substring(1)}, '
-        '${fecha.day} de $mes de ${fecha.year}';
-  }
-
-  static String _formatearFechaCorta(DateTime fecha) {
-    const meses = [
-      'ene',
-      'feb',
-      'mar',
-      'abr',
-      'may',
-      'jun',
-      'jul',
-      'ago',
-      'sep',
-      'oct',
-      'nov',
-      'dic',
-    ];
-    return '${fecha.day} ${meses[fecha.month - 1]} ${fecha.year}';
-  }
-
-  Widget _tarjeta(
-    BuildContext context, {
-    required String titulo,
-    required IconData icono,
-    required Widget contenido,
-  }) {
-    final tema = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppEspaciado.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(icono, color: tema.colorScheme.primary),
-                const SizedBox(width: AppEspaciado.xs),
-                Expanded(
-                  child: Text(titulo, style: tema.textTheme.titleMedium),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppEspaciado.md),
-            contenido,
-          ],
+  void _confirmar(Espacio espacio, List<ServicioExtra> extras) {
+    if (_confirmando || _turnoSeleccionado == null) {
+      return;
+    }
+    final turno = _turnoSeleccionado!;
+    final reserva = ReservasRepository.crear(
+      espacio: espacio,
+      inicio: _fechaHora(_fechaSeleccionada, turno.horaInicio),
+      fin: _fechaHora(_fechaSeleccionada, turno.horaFin),
+      asistentes: _asistentes(),
+      extras: extras
+          .where((extra) => _extrasSeleccionados.contains(extra.nombre))
+          .toList(),
+      fechaActual: widget.fechaActual,
+    );
+    if (reserva == null) {
+      setState(_seleccionarTurno);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El turno ya no está disponible. Elige otro horario.'),
         ),
-      ),
-    );
-  }
-
-  Widget _dato(BuildContext context, String etiqueta, String valor) {
-    final tema = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppEspaciado.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(etiqueta, style: tema.textTheme.labelLarge),
-          Text(valor, style: tema.textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-
-  Widget _lineaPrecio(
-    BuildContext context,
-    String etiqueta,
-    String precio, {
-    bool destacado = false,
-  }) {
-    final tema = Theme.of(context);
-    final estilo = destacado
-        ? tema.textTheme.titleMedium
-        : tema.textTheme.bodyMedium;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppEspaciado.xxs),
-      child: Row(
-        children: [
-          Expanded(child: Text(etiqueta, style: estilo)),
-          const SizedBox(width: AppEspaciado.xs),
-          Flexible(
-            child: Text(precio, textAlign: TextAlign.end, style: estilo),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _mostrarConfirmacion(
-    BuildContext context, {
-    required Espacio espacio,
-    required List<ServicioExtra> extras,
-    required double subtotalAlquiler,
-    required double subtotalExtras,
-    required double total,
-    required String fecha,
-    required String horaInicio,
-    required String horaFin,
-    required List<String> asistentes,
-  }) {
+      );
+      return;
+    }
+    setState(() => _confirmando = true);
     Navigator.of(context).pushReplacement<void, void>(
       MaterialPageRoute<void>(
-        builder: (context) => ConfirmacionReservaScreen(
-          espacio: espacio,
-          extras: List<ServicioExtra>.unmodifiable(extras),
-          fecha: fecha,
-          horaInicio: horaInicio,
-          horaFin: horaFin,
-          asistentes: List<String>.unmodifiable(asistentes),
-          duracionHoras: _duracionHoras,
-          subtotalAlquiler: subtotalAlquiler,
-          subtotalExtras: subtotalExtras,
-          total: total,
+        builder: (_) => ConfirmacionReservaScreen(
+          reserva: reserva,
+          fechaActual: widget.fechaActual,
         ),
       ),
     );
   }
 
-  String _formatearPrecio(double precio) =>
-      precio.toStringAsFixed(2).replaceAll('.', ',');
-}
-
-class ConfirmacionReservaScreen extends StatelessWidget {
-  const ConfirmacionReservaScreen({
-    super.key,
-    required this.espacio,
-    required this.extras,
-    required this.fecha,
-    required this.horaInicio,
-    required this.horaFin,
-    required this.asistentes,
-    required this.duracionHoras,
-    required this.subtotalAlquiler,
-    required this.subtotalExtras,
-    required this.total,
-  });
-
-  final Espacio espacio;
-  final List<ServicioExtra> extras;
-  final String fecha;
-  final String horaInicio;
-  final String horaFin;
-  final List<String> asistentes;
-  final double duracionHoras;
-  final double subtotalAlquiler;
-  final double subtotalExtras;
-  final double total;
-
-  @override
-  Widget build(BuildContext context) {
-    final tema = Theme.of(context);
-    final textoExtras = extras.isEmpty
-        ? 'Ninguno'
-        : extras.map((extra) => extra.nombre).join(', ');
-
-    return PaginaBase(
-      titulo: 'Reserva de prueba',
-      subtitulo: 'Resumen de la reserva. No se ha guardado ningún dato.',
-      anchoMaximo: AppEspaciado.anchoFormulario,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppEspaciado.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(espacio.nombre, style: tema.textTheme.titleLarge),
-                  const SizedBox(height: AppEspaciado.xs),
-                  _dato(context, 'Actividad', 'Pádel'),
-                  _dato(context, 'Fecha', fecha),
-                  _dato(context, 'Hora de inicio', horaInicio),
-                  _dato(context, 'Hora de fin', horaFin),
-                  _dato(
-                    context,
-                    'Asistentes (${asistentes.length}/${espacio.capacidad})',
-                    asistentes.join(', '),
-                  ),
-                  _dato(context, 'Extras', textoExtras),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: AppEspaciado.md),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppEspaciado.md),
-              child: Column(
-                children: [
-                  _filaPrecio(
-                    context,
-                    'Duración',
-                    '${_formatearPrecio(duracionHoras)} horas',
-                  ),
-                  _filaPrecio(
-                    context,
-                    'Tarifa por hora',
-                    '${_formatearPrecio(espacio.tarifaHora)} €/hora',
-                  ),
-                  _filaPrecio(
-                    context,
-                    'Subtotal alquiler',
-                    '${_formatearPrecio(subtotalAlquiler)} €',
-                  ),
-                  _filaPrecio(
-                    context,
-                    'Subtotal extras',
-                    '${_formatearPrecio(subtotalExtras)} €',
-                  ),
-                  const Divider(height: AppEspaciado.lg),
-                  _filaPrecio(
-                    context,
-                    'Total por reserva',
-                    '${_formatearPrecio(total)} €',
-                    destacado: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: AppEspaciado.md),
-          Text(
-            'Reserva de prueba: no se guarda ni altera los ejemplos. Mis '
-            'reservas muestra datos precargados.',
-            style: tema.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppEspaciado.md),
-          FilledButton.icon(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (context) => const MisReservasScreen(),
-              ),
-            ),
-            icon: const Icon(Icons.event_note_outlined),
-            label: const Text('Mis reservas'),
-          ),
-        ],
-      ),
+  List<String> _asistentes() {
+    final nombres = [
+      DatosDemo.usuario.nombre,
+      'Lucía Martínez',
+      'David Ruiz',
+      'Sara López',
+    ];
+    return List.generate(
+      _numeroAsistentes,
+      (indice) =>
+          indice < nombres.length ? nombres[indice] : 'Jugador ${indice + 1}',
     );
   }
 
-  Widget _dato(BuildContext context, String etiqueta, String valor) {
-    final tema = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: AppEspaciado.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(etiqueta, style: tema.textTheme.labelLarge),
-          Text(valor, style: tema.textTheme.bodyMedium),
-        ],
-      ),
+  DateTime _fechaHora(DateTime fecha, String hora) {
+    final partes = hora.split(':');
+    return DateTime(
+      fecha.year,
+      fecha.month,
+      fecha.day,
+      int.parse(partes[0]),
+      int.parse(partes[1]),
     );
   }
 
-  Widget _filaPrecio(
-    BuildContext context,
-    String etiqueta,
-    String precio, {
-    bool destacado = false,
-  }) {
-    final tema = Theme.of(context);
-    final estilo = destacado
-        ? tema.textTheme.titleMedium
-        : tema.textTheme.bodyMedium;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppEspaciado.xxs),
-      child: Row(
-        children: [
-          Expanded(child: Text(etiqueta, style: estilo)),
-          const SizedBox(width: AppEspaciado.xs),
-          Flexible(
-            child: Text(precio, textAlign: TextAlign.end, style: estilo),
-          ),
-        ],
-      ),
-    );
+  String _periodoParaHora(String hora) {
+    final numero = int.parse(hora.split(':').first);
+    if (numero < 12) {
+      return 'Mañana';
+    }
+    if (numero < 18) {
+      return 'Tarde';
+    }
+    return 'Noche';
   }
-
-  String _formatearPrecio(double precio) =>
-      precio.toStringAsFixed(2).replaceAll('.', ',');
 }

@@ -3,6 +3,7 @@ import '../../domain/models/contacto_local.dart';
 import '../../domain/models/disponibilidad_dia.dart';
 import '../../domain/models/espacio.dart';
 import '../../domain/models/franja_disponibilidad.dart';
+import '../../domain/models/reserva.dart';
 import '../../domain/models/servicio_extra.dart';
 import '../../domain/models/usuario.dart';
 
@@ -268,11 +269,37 @@ abstract final class DatosDemo {
     ),
   ];
 
+  static final List<Reserva> reservas = [
+    Reserva(
+      id: 'panoramica',
+      espacio: espacios[1],
+      inicio: DateTime(2026, 11, 14, 10),
+      fin: DateTime(2026, 11, 14, 11, 30),
+      asistentes: [
+        usuario.nombre,
+        'Lucía Martínez',
+        'David Ruiz',
+        'Sara López',
+      ],
+      extras: espacios[1].servicios
+          .where((servicio) => servicio.precio != null)
+          .toList(),
+    ),
+    Reserva(
+      id: 'indoor',
+      espacio: espacios[2],
+      inicio: DateTime(2026, 11, 15, 16),
+      fin: DateTime(2026, 11, 15, 17),
+      asistentes: [usuario.nombre, 'Lucía Martínez'],
+      estado: EstadoReserva.pendiente,
+    ),
+  ];
+
   static const List<List<bool>> _patronesDisponibilidad = [
-    [true, false, true],
-    [false, true, false],
-    [true, true, false],
-    [false, false, true],
+    [true, false, true, true, true],
+    [true, true, false, true, true],
+    [false, true, true, true, true],
+    [true, true, true, false, true],
   ];
 
   static List<DisponibilidadDia> disponibilidadSemana(
@@ -287,27 +314,19 @@ abstract final class DatosDemo {
     final indiceEspacio = indiceEncontrado < 0 ? 0 : indiceEncontrado;
 
     return List.generate(7, (indiceDia) {
+      final fechaDia = DateTime(hoy.year, hoy.month, hoy.day + indiceDia);
       final estados =
-          _patronesDisponibilidad[(indiceDia + indiceEspacio) %
+          _patronesDisponibilidad[(fechaDia.weekday + indiceEspacio) %
               _patronesDisponibilidad.length];
       return DisponibilidadDia(
-        fecha: DateTime(hoy.year, hoy.month, hoy.day + indiceDia),
+        fecha: fechaDia,
         franjas: [
-          FranjaDisponibilidad(
-            horaInicio: '09:00',
-            horaFin: '10:00',
-            libre: estados[0],
-          ),
-          FranjaDisponibilidad(
-            horaInicio: '17:00',
-            horaFin: '18:00',
-            libre: estados[1],
-          ),
-          FranjaDisponibilidad(
-            horaInicio: '18:00',
-            horaFin: '19:00',
-            libre: estados[2],
-          ),
+          for (var indice = 0; indice < 5; indice++)
+            FranjaDisponibilidad(
+              horaInicio: '${10 + indice * 2}:00',
+              horaFin: '${12 + indice * 2}:00',
+              libre: estados[indice],
+            ),
         ],
       );
     });

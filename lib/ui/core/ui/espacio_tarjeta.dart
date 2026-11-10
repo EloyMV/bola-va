@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/espacio.dart';
-import '../theme/app_bordes.dart';
-import '../theme/app_colores.dart';
 import '../theme/app_espaciado.dart';
-import '../theme/app_preferencias.dart';
+import '../theme/colores_estado.dart';
+import 'espacio_imagen.dart';
+
+export 'espacio_imagen.dart';
 
 /// Tarjeta visual de una pista. Recibe textos y una acción desde la pantalla.
 class EspacioTarjeta extends StatelessWidget {
@@ -37,7 +38,6 @@ class EspacioTarjeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
-    final esOscuro = tema.brightness == Brightness.dark;
     final nombreVisible = espacio?.nombre ?? nombre!;
     final ubicacionVisible = espacio?.ubicacion ?? ubicacion!;
     final capacidadVisible =
@@ -47,12 +47,8 @@ class EspacioTarjeta extends StatelessWidget {
     final detalleVisible = detalle ?? espacio?.descripcion;
     final disponibleVisible = espacio?.disponible ?? disponible;
     final colorEstado = disponibleVisible
-        ? (AppPreferencias.apoyoDaltonismo.value
-              ? (esOscuro
-                    ? AppColores.disponibleDaltonismoOscuro
-                    : AppColores.disponibleDaltonismo)
-              : (esOscuro ? AppColores.exitoOscuro : AppColores.exito))
-        : (esOscuro ? tema.colorScheme.onSurfaceVariant : AppColores.ocupado);
+        ? ColoresEstado.disponible(context)
+        : ColoresEstado.ocupado(context);
 
     return Semantics(
       container: true,
@@ -176,87 +172,4 @@ class EspacioTarjeta extends StatelessWidget {
       ),
     );
   }
-}
-
-class EspacioImagen extends StatelessWidget {
-  const EspacioImagen({
-    super.key,
-    required this.imagenUrl,
-    required this.etiqueta,
-    this.altura = 176,
-  });
-
-  final String imagenUrl;
-  final String etiqueta;
-  final double altura;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      image: true,
-      label: 'Imagen de $etiqueta',
-      child: Image.network(
-        imagenUrl,
-        height: altura,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return _imagenAlternativa(altura);
-        },
-        errorBuilder: (context, error, stackTrace) =>
-            _imagenAlternativa(altura),
-      ),
-    );
-  }
-
-  Widget _imagenAlternativa(double altura) {
-    return SizedBox(
-      height: altura,
-      child: CustomPaint(
-        painter: _PistaPintada(),
-        child: const Center(
-          child: Icon(Icons.sports_tennis, color: Colors.white, size: 48),
-        ),
-      ),
-    );
-  }
-}
-
-class _PistaPintada extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final fondo = Paint()..color = const Color(0xFF317B55);
-    final lineas = Paint()
-      ..color = Colors.white.withValues(alpha: 0.75)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    canvas.drawRect(Offset.zero & size, fondo);
-    final rectangulo = Rect.fromLTWH(
-      size.width * 0.14,
-      size.height * 0.14,
-      size.width * 0.72,
-      size.height * 0.72,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        rectangulo,
-        const Radius.circular(AppBordes.medio),
-      ),
-      lineas,
-    );
-    canvas.drawLine(
-      Offset(size.width / 2, rectangulo.top),
-      Offset(size.width / 2, rectangulo.bottom),
-      lineas,
-    );
-    canvas.drawLine(
-      Offset(rectangulo.left, size.height / 2),
-      Offset(rectangulo.right, size.height / 2),
-      lineas,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
